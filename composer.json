@@ -10,12 +10,6 @@
             "name": "Starweb / Ehandelslogik i Lund AB"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/starweb/starlit-utils"
-        }
-    ],
     "require": {
         "php": ">=5.6.0",
         "ext-pdo_mysql": "*",

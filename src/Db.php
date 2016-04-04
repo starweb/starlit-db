@@ -44,9 +44,9 @@ class Db
     protected $password;
 
     /**
-     * @var int
+     * @var array
      */
-    protected $connectRetries;
+    protected $options;
 
     /**
      * @var bool
@@ -60,14 +60,14 @@ class Db
      * @param string|null $username
      * @param string|null $password
      * @param string|null $database
-     * @param int         $connectRetries
+     * @param array       $options
      */
     public function __construct(
         $hostDsnOrPdo,
         $username = null,
         $password = null,
         $database = null,
-        $connectRetries = 0
+        array $options = []
     ) {
         if ($hostDsnOrPdo instanceof PDO) {
             $this->pdo = $hostDsnOrPdo;
@@ -79,9 +79,7 @@ class Db
 
         $this->username = $username;
         $this->password = $password;
-
-
-        $this->connectRetries = $connectRetries;
+        $this->options = $options;
     }
 
     /**
@@ -92,22 +90,24 @@ class Db
             return;
         }
 
-        $retries = $this->connectRetries;
+        $retries = isset($this->options['connectRetries'])? $this->options['connectRetries'] : 0;
         do {
             try {
+                $defaultPdoOptions = [
+                    PDO::ATTR_TIMEOUT            => 5,
+                    // We want emulation by default (faster for single queries). Disable if you want to
+                    // use proper native prepared statements
+                    PDO::ATTR_EMULATE_PREPARES   => true,
+                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                ];
+                $pdoOptions = $defaultPdoOptions + (isset($this->options['pdo']) ? $this->options['pdo'] : []);
+
                 $this->pdo = new PDO(
                     $this->dsn,
                     $this->username,
                     $this->password,
-                    [
-                        PDO::ATTR_TIMEOUT            => 5,
-                        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'",
-                        // We want emulation by default (faster for single querys). Disable if you want to
-                        // use proper native prepared statements
-                        PDO::ATTR_EMULATE_PREPARES   => true,
-                        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    ]
+                    $pdoOptions
                 );
 
                 return;
