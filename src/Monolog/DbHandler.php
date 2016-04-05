@@ -20,7 +20,7 @@ use Starlit\Db\Db;
  * CREATE TABLE `log` (
  *   `log_entry_id` BIGINT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
  *   `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
- *   `channel` VARCHAR(255) NOT NULL,
+ *   `channel` VARCHAR(64) NOT NULL,
  *   `level` VARCHAR(10) NOT NULL,
  *   `message` TEXT NOT NULL,
  *   PRIMARY KEY (`log_entry_id`),
