@@ -275,17 +275,13 @@ abstract class AbstractDbEntity implements \Serializable
             throw new \InvalidArgumentException("No database entity property[{$property}] exists");
         }
 
-        // Don't set type if value is null (and allowed, which for the moment is indicated by default = null)
-        if ($value !== null
-            || !(array_key_exists('default', static::$dbProperties[$property])
-                && static::$dbProperties[$property]['default'] === null)
-        ) {
+        // Don't set type if value is null and allowed (allowed currently indicated by default => null)
+        $nullIsAllowed = (array_key_exists('default', static::$dbProperties[$property])
+            && static::$dbProperties[$property]['default'] === null);
+        if (!($value === null && $nullIsAllowed)) {
             $type = static::$dbProperties[$property]['type'];
-            // Allow floats and ints to be set to null when empty
-            if ($value === '' && in_array($type, ['float', 'int'])
-                && (array_key_exists('default', static::$dbProperties[$property])
-                && static::$dbProperties[$property]['default'] === null)
-            ) {
+            // Set null when empty and default is null
+            if ($value === '' && $nullIsAllowed) {
                  $value = null;
             } else {
                 settype($value, $type);
