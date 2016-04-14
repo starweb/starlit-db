@@ -88,7 +88,7 @@ class BasicDbEntityService
             // Note that database data always contains all properties, with defaults for non set properties
             $dataToSave = $dbEntity->getDbData();
         } else {
-            if ($dbEntity->hasModifiedDbValues()) {
+            if ($dbEntity->hasModifiedDbProperties()) {
                 $dataToSave = $dbEntity->getModifiedDbData();
             } else {
                 // Return if no value has been modified and it's not an insert

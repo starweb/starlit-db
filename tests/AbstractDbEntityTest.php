@@ -132,13 +132,13 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($entity->shouldInsertOnDbSave());
     }
 
-    public function testHasModifiedDbValues()
+    public function testHasModifiedDbProperties()
     {
         $entity = new TestDbEntity();
-        $this->assertFalse($entity->hasModifiedDbValues());
+        $this->assertFalse($entity->hasModifiedDbProperties());
 
         $entity->setSomeField(true);
-        $this->assertTrue($entity->hasModifiedDbValues());
+        $this->assertTrue($entity->hasModifiedDbProperties());
     }
 
     public function testGetDbPropertyName()
@@ -152,6 +152,18 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($entity->getModifiedDbData());
         $entity->setSomeField(true);
         $this->assertArrayHasKey('someField', $entity->getModifiedDbData());
+    }
+
+    public function clearModifiedDbProperty()
+    {
+        $entity = new TestDbEntity();
+        $entity->setSomeField(true);
+        $entity->setSomeFloat(5.0);
+        $this->assertNotEmpty($entity->getModifiedDbData());
+
+        $entity->clearModifiedDbProperty('someField');
+        $this->assertFalse($entity->isDbPropertyModified('someField'));
+        $this->assertNotEmpty($entity->getModifiedDbData());
     }
 
     public function testClearModifiedDbProperties()
@@ -170,7 +182,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
 
         $entity->__call('setSomeId', [6]);
         $this->assertEquals(6, $entity->__call('getSomeId'));
-        $this->assertTrue($entity->hasModifiedDbValues());
+        $this->assertTrue($entity->hasModifiedDbProperties());
     }
 
     public function test__callFail()

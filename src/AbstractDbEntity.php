@@ -290,7 +290,7 @@ abstract class AbstractDbEntity implements \Serializable
 
         $this->dbData[$property] = $value;
 
-        if ($setAsModified && !$this->isDbValueModified($property)) {
+        if ($setAsModified && !$this->isDbPropertyModified($property)) {
             $this->modifiedDbProperties[] = $property;
         }
     }
@@ -340,7 +340,7 @@ abstract class AbstractDbEntity implements \Serializable
     /**
      * @return bool
      */
-    public function hasModifiedDbValues()
+    public function hasModifiedDbProperties()
     {
         return !empty($this->modifiedDbProperties);
     }
@@ -349,7 +349,7 @@ abstract class AbstractDbEntity implements \Serializable
      * @param string $property
      * @return bool
      */
-    public function isDbValueModified($property)
+    public function isDbPropertyModified($property)
     {
         return in_array($property, $this->modifiedDbProperties);
     }
@@ -360,6 +360,16 @@ abstract class AbstractDbEntity implements \Serializable
     public function getModifiedDbData()
     {
         return array_intersect_key($this->dbData, array_flip($this->modifiedDbProperties));
+    }
+
+    /**
+     * @param string $property
+     */
+    public function clearModifiedDbProperty($property)
+    {
+        if (($key = array_search($property, $this->modifiedDbProperties))) {
+            unset($this->modifiedDbProperties[$key]);
+        }
     }
 
     /**
