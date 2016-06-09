@@ -50,7 +50,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
 
     public function testGetLimitSqlPageItemInvalidPageNo()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException('\InvalidArgumentException');
 
         // Use reflection to make protected method accessible
         $method = new \ReflectionMethod($this->dbFetcher, 'getLimitSql');
@@ -147,7 +147,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
     {
         $invalidDbFetcher = new TestIncompleteFetcher($this->mockDb);
 
-        $this->setExpectedException('\LogicException');
+        $this->expectException('\LogicException');
 
         $method = new \ReflectionMethod($invalidDbFetcher, 'getDbEntitiesFromRows');
         $method->setAccessible(true);
@@ -171,7 +171,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
     {
         $invalidDbFetcher = new TestIncompleteFetcher($this->mockDb);
 
-        $this->setExpectedException('\LogicException');
+        $this->expectException('\LogicException');
 
         $method = new \ReflectionMethod($invalidDbFetcher, 'getDbEntityFromRow');
         $method->setAccessible(true);
