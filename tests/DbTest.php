@@ -43,7 +43,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $sqlParameters = [1, false];
         $rowCount = 5;
 
-        $mockPdoStatement = $this->getMock('\PDOStatement');
+        $mockPdoStatement = $this->getMockBuilder('\PDOStatement')->getMock();
 
         $this->mockPdo->expects($this->once())
             ->method('prepare')
@@ -68,7 +68,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
             ->method('prepare')
             ->willThrowException(new \PDOException());
 
-        $this->setExpectedException('\Starlit\Db\Exception\QueryException');
+        $this->expectException('\Starlit\Db\Exception\QueryException');
         $this->db->exec('NO SQL');
     }
 
@@ -78,7 +78,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $sqlParameters = [1];
         $tableData = ['id' => 5];
 
-        $mockPdoStatement = $this->getMock('\PDOStatement');
+        $mockPdoStatement = $this->getMockBuilder('\PDOStatement')->getMock();
         $this->mockPdo->expects($this->once())
             ->method('prepare')
             ->with($sql)
@@ -101,7 +101,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $sqlParameters = [3];
         $tableData = [['id' => 1], ['id' => 2]];
 
-        $mockPdoStatement = $this->getMock('\PDOStatement');
+        $mockPdoStatement = $this->getMockBuilder('\PDOStatement')->getMock();
         $this->mockPdo->expects($this->once())
             ->method('prepare')
             ->with($sql)
@@ -124,7 +124,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $sqlParameters = [10];
         $result = 5;
 
-        $mockPdoStatement = $this->getMock('\PDOStatement');
+        $mockPdoStatement = $this->getMockBuilder('\PDOStatement')->getMock();
         $this->mockPdo->expects($this->once())
             ->method('prepare')
             ->with($sql)
@@ -215,7 +215,8 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $expectedSql = "INSERT INTO `" . $table . "` (`id`, `name`)\nVALUES (?, ?)";
         $expectedAffectedRows = 1;
 
-        $mockDb = $this->getMock('\Starlit\Db\Db', ['exec'], [], '', false);
+        $mockDb = $this->getMockBuilder('\Starlit\Db\Db')
+            ->setMethods(['exec'])->setConstructorArgs([])->disableOriginalConstructor()->getMock();
         $mockDb->expects($this->once())
             ->method('exec')
             ->with($expectedSql, array_values($insertData))
@@ -235,7 +236,8 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $expectedSql = "UPDATE `" . $table . "`\nSET `name` = ?\nWHERE `name` = ?";
         $expectedAffectedRows = 1;
 
-        $mockDb = $this->getMock('\Starlit\Db\Db', ['exec'], [], '', false);
+        $mockDb = $this->getMockBuilder('\Starlit\Db\Db')
+            ->setMethods(['exec'])->setConstructorArgs([])->disableOriginalConstructor()->getMock();
         $mockDb->expects($this->once())
             ->method('exec')
             ->with($expectedSql, array_merge(array_values($updateData), $whereParameters))

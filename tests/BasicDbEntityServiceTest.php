@@ -25,7 +25,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadThrowsExceptionWithInvalidEntity()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException('\InvalidArgumentException');
         $entity = new ServiceTestEntity();
         $this->dbService->load($entity);
     }
@@ -36,7 +36,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
             ->method('fetchRow')
             ->will($this->returnValue(false));
 
-        $this->setExpectedException('\RuntimeException');
+        $this->expectException('\RuntimeException');
         $entity = new ServiceTestEntity(1);
         $this->dbService->load($entity);
     }
@@ -113,7 +113,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
         $entity = new ServiceTestEntity();
         $entity->setSomeName('12345678901');
 
-        $this->setExpectedException('\RuntimeException');
+        $this->expectException('\RuntimeException');
         $this->dbService->save($entity);
     }
 
@@ -122,7 +122,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
         $entity = new ServiceTestEntity();
         $entity->setSomeName('');
 
-        $this->setExpectedException('\RuntimeException');
+        $this->expectException('\RuntimeException');
         $this->dbService->save($entity);
     }
 
@@ -132,7 +132,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
         $entity->setSomeName('A Name');
         $entity->setSomeValue(0);
 
-        $this->setExpectedException('\RuntimeException');
+        $this->expectException('\RuntimeException');
         $this->dbService->save($entity);
     }
 
@@ -174,7 +174,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new ServiceTestEntity();
 
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException('\InvalidArgumentException');
         $this->dbService->delete($entity);
     }
 

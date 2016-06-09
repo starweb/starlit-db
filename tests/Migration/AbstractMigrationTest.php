@@ -29,7 +29,7 @@ class AbstractMigrationTest extends \PHPUnit_Framework_TestCase
     {
         $migration = new TestInvalidMigration($this->mockDb);
 
-        $this->setExpectedException('\LogicException');
+        $this->expectException('\LogicException');
         $migration->getNumber();
     }
 
