@@ -288,10 +288,12 @@ abstract class AbstractDbEntity implements \Serializable
             }
         }
 
-        $this->dbData[$property] = $value;
-
-        if ($setAsModified && !$this->isDbPropertyModified($property)) {
-            $this->modifiedDbProperties[] = $property;
+        if ($this->dbData[$property] !== $value) {
+            $this->dbData[$property] = $value;
+    
+            if ($setAsModified && !$this->isDbPropertyModified($property)) {
+                $this->modifiedDbProperties[] = $property;
+            }
         }
     }
 
