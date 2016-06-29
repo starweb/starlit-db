@@ -113,8 +113,8 @@ class Db
                 return;
             } catch (PDOException $e) {
                 if ($this->isConnectionExceptionCausedByConnection($e) && $retries > 0) {
-                    // Sleep for 100 ms until next retry
-                    usleep(100000);
+                    // Sleep for 100 - 500 ms until next retry
+                    usleep(rand(100000, 500000));
                 } else {
                     throw new ConnectionException($e);
                 }
@@ -130,7 +130,8 @@ class Db
     private function isConnectionExceptionCausedByConnection(PDOException $exception)
     {
         return in_array($exception->getCode(), [
-            2003, // Can't connect to MySQL server
+            2002, // Can't connect to MySQL server (Socket)
+            2003, // Can't connect to MySQL server (TCP)
             2006, // MySQL server has gone away
             2013, // Lost connection to MySQL server during query
         ]);
