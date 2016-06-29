@@ -177,6 +177,15 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
         $this->expectException('\InvalidArgumentException');
         $this->dbService->delete($entity);
     }
+
+    public function testReconnect()
+    {
+        $mockDb = $this->getMockBuilder('Starlit\Db\Db')->disableOriginalConstructor()->getMock();
+        $mockDb->expects($this->once())->method('disconnect');
+        $mockDb->expects($this->once())->method('connect');
+        $entity = new BasicDbEntityService($mockDb);
+        $entity->reconnect();
+    }
 }
 
 class ServiceTestEntity extends AbstractDbEntity
