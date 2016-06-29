@@ -124,7 +124,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         ];
         $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
 
-        $this->setExpectedException('\RuntimeException');
+        $this->expectException('\RuntimeException');
         $this->migrator->migrate();
     }
 
@@ -136,7 +136,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         ];
         $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
 
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException('\InvalidArgumentException');
         $this->migrator->migrate('bla');
     }
 
@@ -148,7 +148,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         ];
         $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
 
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException('\InvalidArgumentException');
         $this->migrator->migrate(3);
     }
 }
