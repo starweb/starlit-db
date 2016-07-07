@@ -50,9 +50,9 @@ abstract class AbstractDbEntityFetcher
     protected function getLimitSql($limit, array $pageItem = [])
     {
         $limitSql = '';
-        if ($limit || $pageItem) {
+        if (!empty($limit) || !empty($pageItem)) {
             $limitSql = 'LIMIT ';
-            if ($pageItem) {
+            if (!empty($pageItem)) {
                 list($pageNo, $rowsPerPage) = $pageItem;
 
                 $pageNo = (int) $pageNo;
@@ -102,7 +102,7 @@ abstract class AbstractDbEntityFetcher
         }
 
         $entityClass = $this->dbEntityClass;
-        if ($keyPropertyName) {
+        if (!empty($keyPropertyName)) {
             $keyDbFieldName = AbstractDbEntity::getDbFieldName($keyPropertyName);
         } else {
             $keyDbFieldName = $entityClass::getPrimaryDbFieldKey();

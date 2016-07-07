@@ -209,7 +209,7 @@ class BasicDbEntityService
 
     /**
      * @param AbstractDbEntity $dbEntity
-     * @return string
+     * @return array
      */
     private function getPrimaryKeyWhereParameters(AbstractDbEntity $dbEntity)
     {

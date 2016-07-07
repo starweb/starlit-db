@@ -337,7 +337,7 @@ class Migrator
         $migrations = $this->getMigrationsTo($toNumber);
 
         // If there's no migration to be done, we are up to date.
-        if (!$migrations) {
+        if (empty($migrations)) {
             $this->addInfo(sprintf(
                 'No migrations available, things are up to date (migration %d)!',
                 $this->getCurrentNumber()

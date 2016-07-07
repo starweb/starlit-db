@@ -137,9 +137,9 @@ abstract class AbstractDbEntity implements \Serializable
     {
         static $checkedClasses = [];
         if (!in_array(static::class, $checkedClasses)) {
-            if (!static::$dbTableName
-                || !static::$dbProperties
-                || !static::$primaryDbPropertyKey
+            if (empty(static::$dbTableName)
+                || empty(static::$dbProperties)
+                || empty(static::$primaryDbPropertyKey)
                 || (is_scalar(static::$primaryDbPropertyKey)
                     && !isset(static::$dbProperties[static::$primaryDbPropertyKey]['type']))
                 || (is_array(static::$primaryDbPropertyKey)
@@ -490,7 +490,7 @@ abstract class AbstractDbEntity implements \Serializable
     }
 
     /**
-     * @return bool;
+     * @return bool
      */
     public function isDeleted()
     {

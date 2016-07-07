@@ -36,10 +36,10 @@ class QueryException extends DbException
         $this->parameters = $parameters;
 
         $extraMessage = '';
-        if ($this->sql) {
+        if (!empty($this->sql)) {
             $extraMessage .= " [SQL: {$this->sql}]";
         }
-        if ($this->parameters) {
+        if (!empty($this->parameters)) {
             $extraMessage .= " [Parameters: " . implode(', ', $this->parameters) . "]";
         }
 
