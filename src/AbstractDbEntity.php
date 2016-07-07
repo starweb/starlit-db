@@ -268,8 +268,9 @@ abstract class AbstractDbEntity implements \Serializable
      * @param string $property
      * @param mixed  $value
      * @param bool   $setAsModified
+     * @param bool   $force
      */
-    protected function setDbValue($property, $value, $setAsModified = true)
+    protected function setDbValue($property, $value, $setAsModified = true, $force = false)
     {
         if (!isset(static::$dbProperties[$property])) {
             throw new \InvalidArgumentException("No database entity property[{$property}] exists");
@@ -288,9 +289,9 @@ abstract class AbstractDbEntity implements \Serializable
             }
         }
 
-        if ($this->dbData[$property] !== $value) {
+        if ($this->dbData[$property] !== $value || $force) {
             $this->dbData[$property] = $value;
-    
+
             if ($setAsModified && !$this->isDbPropertyModified($property)) {
                 $this->modifiedDbProperties[] = $property;
             }
@@ -396,8 +397,8 @@ abstract class AbstractDbEntity implements \Serializable
             return $this->getDbValue($propertyName);
         } elseif (strpos($name, 'set') === 0 && isset(static::$dbProperties[$propertyName])) {
             $argumentCount = count($arguments);
-            if ($argumentCount === 1 || $argumentCount === 2) {
-                return $this->setDbValue($propertyName, $arguments[0], ($argumentCount === 2) ? $arguments[1] : true);
+            if ($argumentCount >= 1 && $argumentCount <= 3) {
+                return $this->setDbValue($propertyName, ...$arguments);
             } else {
                 throw new \BadMethodCallException("Invalid argument count[{$argumentCount}] for {$name}()");
             }

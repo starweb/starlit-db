@@ -116,6 +116,22 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0.0, $getMethod->invoke($entity, 'someOtherFloat'));
     }
 
+    public function testSetDbValueNoChange()
+    {
+        $entity = new TestDbEntity();
+
+        $entity->setSomeName('test'); // Same as default value
+        $this->assertFalse($entity->isDbPropertyModified('someName'));
+    }
+
+    public function testSetDbValueForceChange()
+    {
+        $entity = new TestDbEntity();
+
+        $entity->setSomeName('test', true, true); // Same as default value
+        $this->assertTrue($entity->isDbPropertyModified('someName'));
+    }
+    
     public function testGetDbFieldName()
     {
         $entity = new TestDbEntity();
@@ -196,7 +212,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new TestDbEntity();
         $this->expectException('\BadMethodCallException');
-        $entity->__call('setSomeId', [1,2,3]);
+        $entity->__call('setSomeId');
     }
 
     public function testSetDbData()
