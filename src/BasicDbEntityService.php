@@ -192,7 +192,7 @@ class BasicDbEntityService
      * @param AbstractDbEntity $dbEntity
      * @return string
      */
-    private function getPrimaryKeyWhereSql(AbstractDbEntity $dbEntity)
+    protected function getPrimaryKeyWhereSql(AbstractDbEntity $dbEntity)
     {
         if (is_array($dbEntity->getPrimaryDbPropertyKey())) {
             $whereStrings = [];
@@ -211,7 +211,7 @@ class BasicDbEntityService
      * @param AbstractDbEntity $dbEntity
      * @return array
      */
-    private function getPrimaryKeyWhereParameters(AbstractDbEntity $dbEntity)
+    protected function getPrimaryKeyWhereParameters(AbstractDbEntity $dbEntity)
     {
         if (is_array($dbEntity->getPrimaryDbPropertyKey())) {
             $whereParameters = $dbEntity->getPrimaryDbValue();
