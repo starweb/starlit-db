@@ -144,7 +144,7 @@ class Migrator
     {
         if (!isset($this->hasMigrationsTable)) {
             $this->hasMigrationsTable =
-                (bool) $this->db->fetchOne('SHOW TABLES LIKE ?', [$this->migrationsTableName]);
+                (bool) $this->db->fetchValue('SHOW TABLES LIKE ?', [$this->migrationsTableName]);
         }
 
         return $this->hasMigrationsTable;
@@ -177,7 +177,7 @@ class Migrator
             $this->migratedNumbers = [];
 
             $sql = 'SELECT * FROM `' . $this->migrationsTableName . '` ORDER BY migration_number';
-            foreach ($this->db->fetchAll($sql) as $row) {
+            foreach ($this->db->fetchRows($sql) as $row) {
                 $this->migratedNumbers[] = $row['migration_number'];
             }
         }
@@ -286,7 +286,7 @@ class Migrator
      */
     public function emptyDb()
     {
-        if (($rows = $this->db->fetchAll('SHOW TABLES', [], true))) {
+        if (($rows = $this->db->fetchRows('SHOW TABLES', [], true))) {
             $this->db->exec('SET foreign_key_checks = 0');
             foreach ($rows as $row) {
                 $this->db->exec('DROP TABLE `' . $row[0] . '`');

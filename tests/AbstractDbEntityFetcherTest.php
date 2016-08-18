@@ -83,7 +83,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
         $fakeObjects = [1, 2];
 
         $this->mockDb->expects($this->once())
-            ->method('fetchOne')
+            ->method('fetchValue')
             ->will($this->returnValue(count($fakeObjects)));
 
         list($objects, $totalRowCount) = $method->invoke($this->dbFetcher, $fakeObjects, true);

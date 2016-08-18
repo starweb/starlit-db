@@ -82,7 +82,7 @@ abstract class AbstractDbEntityFetcher
     protected function getFetchPaginationResult(array $objects, $pagination)
     {
         if ($pagination) {
-            $totalRowCount = $this->db->fetchOne('SELECT FOUND_ROWS()');
+            $totalRowCount = $this->db->fetchValue('SELECT FOUND_ROWS()');
 
             return [$objects, $totalRowCount];
         } else {

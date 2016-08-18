@@ -73,7 +73,7 @@ class DbHandlerTest extends \PHPUnit_Framework_TestCase
     public function testWriteWithClean()
     {
         $this->db
-            ->method('fetchOne')
+            ->method('fetchValue')
             ->willReturn(100);
 
         $this->db->expects($this->once())
@@ -88,7 +88,7 @@ class DbHandlerTest extends \PHPUnit_Framework_TestCase
     public function testWriteWithNoChanceOfClean()
     {
         $this->db
-            ->method('fetchOne')
+            ->method('fetchValue')
             ->willReturn(100);
 
         $this->db->expects($this->never())
@@ -104,7 +104,7 @@ class DbHandlerTest extends \PHPUnit_Framework_TestCase
     public function testWriteNotTimeToCleanYet()
     {
         $this->db
-            ->method('fetchOne')
+            ->method('fetchValue')
             ->willReturn(5);
 
         $this->db->expects($this->never())

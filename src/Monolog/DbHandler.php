@@ -146,7 +146,7 @@ class DbHandler extends AbstractProcessingHandler
      */
     protected function getChannelEntriesCount($channel)
     {
-        return $this->db->fetchOne(
+        return $this->db->fetchValue(
             'SELECT COUNT(*) FROM `' . $this->table . '` WHERE `channel` = ?',
             [$channel]
         );

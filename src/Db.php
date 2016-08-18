@@ -225,7 +225,7 @@ class Db
      * @param bool   $indexedKeys
      * @return array
      */
-    public function fetchAll($sql, array $parameters = [], $indexedKeys = false)
+    public function fetchRows($sql, array $parameters = [], $indexedKeys = false)
     {
         $statement = $this->executeQuery($sql, $parameters);
 
@@ -239,7 +239,7 @@ class Db
      * @param array  $parameters
      * @return string|false
      */
-    public function fetchOne($sql, array $parameters = [])
+    public function fetchValue($sql, array $parameters = [])
     {
         $statement = $this->executeQuery($sql, $parameters);
 

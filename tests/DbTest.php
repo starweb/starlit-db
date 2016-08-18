@@ -95,7 +95,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
          $this->assertEquals($tableData, $this->db->fetchRow($sql, $sqlParameters));
     }
 
-    public function testFetchAllCallsPdoWithSqlAndParams()
+    public function testFetchRowsCallsPdoWithSqlAndParams()
     {
         $sql = 'SELECT * FROM `test_table` WHERE id < ?';
         $sqlParameters = [3];
@@ -115,7 +115,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
             ->method('fetchAll')
             ->willReturn($tableData);
 
-        $this->assertEquals($tableData, $this->db->fetchAll($sql, $sqlParameters));
+        $this->assertEquals($tableData, $this->db->fetchRows($sql, $sqlParameters));
     }
 
     public function testFetchOneCallsPdoWithSqlAndParams()
@@ -138,7 +138,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
             ->method('fetchColumn')
             ->willReturn($result);
 
-        $this->assertEquals($result, $this->db->fetchOne($sql, $sqlParameters));
+        $this->assertEquals($result, $this->db->fetchValue($sql, $sqlParameters));
     }
 
     public function testQuoteCallPdo()

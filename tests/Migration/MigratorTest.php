@@ -42,7 +42,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         $migrationTableRows = [
             ['migration_number' => 1],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->assertEquals(1, $this->migrator->getCurrentNumber());
     }
@@ -53,7 +53,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
             ['table1'],
             ['table2'],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->mockDb->expects($this->at(2))->method('exec')->with($this->stringContains('DROP TABLE `table1`'));
         $this->mockDb->expects($this->at(3))->method('exec')->with($this->stringContains('DROP TABLE `table2`'));
@@ -67,7 +67,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         $migrationTableRows = [
             ['migration_number' => 2],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->migrator->migrate(1);
 
@@ -81,7 +81,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         $migrationTableRows = [
             ['migration_number' => 1],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->migrator->migrate();
 
@@ -96,7 +96,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
             ['migration_number' => 1],
             ['migration_number' => 2],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->migrator->migrate();
 
@@ -109,7 +109,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         $migrationTableRows = [
             ['migration_number' => 2],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->migrator->migrate();
 
@@ -122,7 +122,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         $migrationTableRows = [
             ['migration_number' => 3],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->expectException('\RuntimeException');
         $this->migrator->migrate();
@@ -134,7 +134,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         $migrationTableRows = [
             ['migration_number' => 1],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->expectException('\InvalidArgumentException');
         $this->migrator->migrate('bla');
@@ -146,7 +146,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         $migrationTableRows = [
             ['migration_number' => 1],
         ];
-        $this->mockDb->expects($this->any())->method('fetchAll')->willReturn($migrationTableRows);
+        $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
         $this->expectException('\InvalidArgumentException');
         $this->migrator->migrate(3);
