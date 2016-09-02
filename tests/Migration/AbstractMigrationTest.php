@@ -2,6 +2,8 @@
 
 namespace Starlit\Db\Migration;
 
+use Starlit\Db\Db;
+
 class AbstractMigrationTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -16,7 +18,7 @@ class AbstractMigrationTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->mockDb = $this->getMockBuilder('\Starlit\Db\Db')->disableOriginalConstructor()->getMock();
+        $this->mockDb = $this->createMock(Db::class);
         $this->migration = new TestMigration15($this->mockDb);
     }
 
@@ -29,7 +31,7 @@ class AbstractMigrationTest extends \PHPUnit_Framework_TestCase
     {
         $migration = new TestInvalidMigration($this->mockDb);
 
-        $this->expectException('\LogicException');
+        $this->expectException(\LogicException::class);
         $migration->getNumber();
     }
 

@@ -2,6 +2,8 @@
 
 namespace Starlit\Db\Migration;
 
+use Starlit\Db\Db;
+
 class MigratorTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -21,7 +23,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->mockDb = $this->getMockBuilder('\Starlit\Db\Db')->disableOriginalConstructor()->getMock();
+        $this->mockDb = $this->createMock(Db::class);
 
         $infoCallback = function ($info) {
             $this->callbackInfo .= $info . "\n";
@@ -124,7 +126,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         ];
         $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
-        $this->expectException('\RuntimeException');
+        $this->expectException(\RuntimeException::class);
         $this->migrator->migrate();
     }
 
@@ -136,7 +138,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         ];
         $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
-        $this->expectException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->migrator->migrate('bla');
     }
 
@@ -148,7 +150,7 @@ class MigratorTest extends \PHPUnit_Framework_TestCase
         ];
         $this->mockDb->expects($this->any())->method('fetchRows')->willReturn($migrationTableRows);
 
-        $this->expectException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->migrator->migrate(3);
     }
 }

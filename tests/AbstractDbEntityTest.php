@@ -12,7 +12,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckStaticProperties()
     {
-        $this->expectException('\LogicException');
+        $this->expectException(\LogicException::class);
 
         new TestIncompleteDbEntity();
     }
@@ -47,7 +47,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testSetPrimaryDbValueWithInvalidMultiKey()
     {
-        $this->expectException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $entity = new TestDbEntityMultiPrimary();
         $entity->setPrimaryDbValue(5);
     }
@@ -64,15 +64,15 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
     public function testIsNewDbEntityWithMultiKey()
     {
         $entity = new TestDbEntityMultiPrimary();
-        $this->expectException('\LogicException');
+        $this->expectException(\LogicException::class);
         $entity->isNewDbEntity();
     }
 
     public function testSetDbValueFail()
     {
-        $this->expectException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
 
-        $method = new \ReflectionMethod('\Starlit\Db\AbstractDbEntity', 'SetDbValue');
+        $method = new \ReflectionMethod(AbstractDbEntity::class, 'SetDbValue');
         $method->setAccessible(true);
         $entity = new TestDbEntity();
         $this->assertEquals('blah', $method->invoke($entity, 'blalb', 'val'));
@@ -331,7 +331,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new TestDbEntity();
         $validator = $entity->getDbDataValidator();
-        $this->assertInstanceOf('\Starlit\Utils\Validation\Validator', $validator);
+        $this->assertInstanceOf(\Starlit\Utils\Validation\Validator::class, $validator);
     }
 
     public function testValidateAndSetDbData()
@@ -345,7 +345,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testValidateAndSetDbDataFail()
     {
-        $mockTranslator = $this->getMockBuilder('\Starlit\Utils\Validation\ValidatorTranslatorInterface')->getMock();
+        $mockTranslator = $this->createMock(\Starlit\Utils\Validation\ValidatorTranslatorInterface::class);
 
         $mockTranslator->expects($this->atLeastOnce())
             ->method('trans')

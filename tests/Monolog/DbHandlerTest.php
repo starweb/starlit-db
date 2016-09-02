@@ -3,6 +3,7 @@
 namespace Starlit\Db\Monolog;
 
 use Monolog\Logger;
+use Starlit\Db\Db;
 
 class DbHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,7 +31,7 @@ class DbHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->db = $this->getMockBuilder('\Starlit\Db\Db')->disableOriginalConstructor()->getMock();
+        $this->db = $this->createMock(Db::class);
         $this->dbHandler = new DbHandler($this->db, 10, ['user_id']);
     }
 

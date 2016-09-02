@@ -16,10 +16,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->mockDb = $this->getMockBuilder('\Starlit\Db\Db')
-            ->disableOriginalConstructor()
-            ->getMock();
-
+        $this->mockDb = $this->createMock(Db::class);
         $this->dbFetcher = new TestFetcher($this->mockDb);
     }
 
@@ -50,7 +47,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
 
     public function testGetLimitSqlPageItemInvalidPageNo()
     {
-        $this->expectException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
 
         // Use reflection to make protected method accessible
         $method = new \ReflectionMethod($this->dbFetcher, 'getLimitSql');
@@ -171,7 +168,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
     {
         $invalidDbFetcher = new TestIncompleteFetcher($this->mockDb);
 
-        $this->expectException('\LogicException');
+        $this->expectException(\LogicException::class);
 
         $method = new \ReflectionMethod($invalidDbFetcher, 'getDbEntityFromRow');
         $method->setAccessible(true);

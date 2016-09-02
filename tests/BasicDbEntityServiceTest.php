@@ -16,16 +16,13 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->mockDb = $this->getMockBuilder('\Starlit\Db\Db')
-        ->disableOriginalConstructor()
-        ->getMock();
-
+        $this->mockDb = $this->createMock(Db::class);
         $this->dbService = new BasicDbEntityService($this->mockDb);
     }
 
     public function testLoadThrowsExceptionWithInvalidEntity()
     {
-        $this->expectException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $entity = new ServiceTestEntity();
         $this->dbService->load($entity);
     }
@@ -36,7 +33,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
             ->method('fetchRow')
             ->will($this->returnValue(false));
 
-        $this->expectException('\RuntimeException');
+        $this->expectException(\RuntimeException::class);
         $entity = new ServiceTestEntity(1);
         $this->dbService->load($entity);
     }
@@ -174,7 +171,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new ServiceTestEntity();
 
-        $this->expectException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->dbService->delete($entity);
     }
 }

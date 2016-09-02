@@ -14,7 +14,7 @@ class QueryExceptionTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $mockPdoException = $this->getMockBuilder('\PDOException')->getMock();
+        $mockPdoException = $this->createMock(\PDOException::class);
 
         $this->exception = new QueryException($mockPdoException, $this->sql, $this->parameters);
     }
