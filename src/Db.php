@@ -138,11 +138,19 @@ class Db
     }
 
     /**
-     * Close database connection.
+     * Close the database connection.
      */
     public function disconnect()
     {
         $this->pdo = null;
+    }
+
+    /**
+     */
+    public function reconnect()
+    {
+        $this->disconnect();
+        $this->connect();
     }
 
     /**

@@ -27,6 +27,15 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($this->db->getPdo());
     }
 
+    public function testReconnect()
+    {
+        $mockDb = $this->createPartialMock(Db::class, ['disconnect', 'connect']);
+        $mockDb->expects($this->once())->method('disconnect');
+        $mockDb->expects($this->once())->method('connect');
+
+        $mockDb->reconnect();
+    }
+
     public function testIsConnectedReturnsTrue()
     {
         $this->assertTrue($this->db->isConnected());

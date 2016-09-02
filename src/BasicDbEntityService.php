@@ -34,14 +34,6 @@ class BasicDbEntityService
     {
         $this->db = $db;
     }
-    
-    /**
-     */
-    public function reconnect()
-    {
-        $this->db->disconnect();
-        $this->db->connect();
-    }
 
     /**
      * Load object's values from database table.
