@@ -75,6 +75,8 @@ class BasicDbEntityService
      */
     public function save(AbstractDbEntity $dbEntity)
     {
+        $dbEntity->onBeforeSave();
+
         if ($dbEntity->shouldBeDeletedFromDbOnSave()) {
             // Only delete if previously saved to db
             if ($dbEntity->getPrimaryDbValue()) {
@@ -157,6 +159,7 @@ class BasicDbEntityService
 
         $dbEntity->clearModifiedDbProperties();
         $dbEntity->setForceDbInsertOnSave(false);
+        $dbEntity->onAfterSave();
 
         return true;
     }
