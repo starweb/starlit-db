@@ -99,10 +99,9 @@ class DbHandler extends AbstractProcessingHandler
         $record['additionalFieldsData'] = [];
         foreach ($this->additionalFields as $field) {
             foreach (['context', 'extra'] as $sourceKey) {
-                if (isset($record[$sourceKey][$field])) {
+                if (isset($record[$sourceKey]) && array_key_exists($field, $record[$sourceKey])) {
                     $record['additionalFieldsData'][$field] = $record[$sourceKey][$field];
                     unset($record[$sourceKey][$field]);
-
                 }
             }
         }
