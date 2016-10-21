@@ -48,7 +48,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
     public function testExecCallsPdoWithSqlAndParams()
     {
         $sql = 'UPDATE `test_table` SET `test_column` = ? AND `other_column` = ?';
-        $sqlParameters = [1, false];
+        $sqlParameters = [1, 2.3, true, false, 'abc', null];
         $rowCount = 5;
 
         $mockPdoStatement = $this->createMock(\PDOStatement::class);
@@ -60,7 +60,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
         $mockPdoStatement->expects($this->once())
             ->method('execute')
-            ->with([1, 0]);
+            ->with([1, 2.3, 1, 0, 'abc', null]);
 
         $mockPdoStatement->expects($this->once())
             ->method('rowCount')
@@ -78,6 +78,17 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
         $this->expectException(\Starlit\Db\Exception\QueryException::class);
         $this->db->exec('NO SQL');
+    }
+
+    public function testExecThrowsExceptionWithInvalidParameterTypes()
+    {
+        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+        $this->mockPdo->method('prepare')->willReturn($mockPdoStatement);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $sqlParameters = [3, ['a', 'b', 'c']];
+        $this->db->exec('', $sqlParameters);
     }
 
     public function testFetchRowCallsPdoWithSqlAndParams()

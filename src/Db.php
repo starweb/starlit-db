@@ -290,6 +290,10 @@ class Db
         foreach ($parameters as &$parameterValue) {
             if (is_bool($parameterValue)) {
                 $parameterValue = (int) $parameterValue;
+            } elseif (!is_scalar($parameterValue) && $parameterValue !== null) {
+                throw new \InvalidArgumentException(
+                    sprintf('Invalid db parameter type "%s"', gettype($parameterValue))
+                );
             }
         }
         unset($parameterValue);
