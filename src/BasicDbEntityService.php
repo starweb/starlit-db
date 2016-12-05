@@ -2,7 +2,7 @@
 /**
  * Starlit Db.
  *
- * @copyright Copyright (c) 2016 Starweb / Ehandelslogik i Lund AB
+ * @copyright Copyright (c) 2016 Starweb AB
  * @license   BSD 3-Clause
  */
 
