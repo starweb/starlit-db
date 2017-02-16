@@ -309,6 +309,12 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($entity->shouldForceDbInsertOnSave());
     }
 
+    public function testGetDbProperties()
+    {
+        $entity = new TestDbEntity();
+        $this->assertArrayHasKey('someName', $entity->getDbProperties());
+    }
+
     public function testGetDbPropertyMaxLength()
     {
         $entity = new TestDbEntity();

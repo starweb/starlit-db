@@ -518,6 +518,14 @@ abstract class AbstractDbEntity implements \Serializable
     }
 
     /**
+     * @return array
+     */
+    public static function getDbProperties()
+    {
+        return static::$dbProperties;
+    }
+
+    /**
      * @param string $propertyName
      * @return int|null
      */
