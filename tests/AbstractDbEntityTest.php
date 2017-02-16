@@ -327,35 +327,6 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($entity->getDbPropertyNonEmpty('someOtherFloat'));
     }
 
-    public function testGetDbDataValidator()
-    {
-        $entity = new TestDbEntity();
-        $validator = $entity->getDbDataValidator();
-        $this->assertInstanceOf(\Starlit\Utils\Validation\Validator::class, $validator);
-    }
-
-    public function testValidateAndSetDbData()
-    {
-        $entity = new TestDbEntity();
-        $errorMsgs = $entity->validateAndSetDbData(['someName' => 'woho', 'someOtherFloat' => 1.0]);
-
-        $this->assertEmpty($errorMsgs);
-        $this->assertEquals($entity->__call('getSomeName'), 'woho');
-    }
-
-    public function testValidateAndSetDbDataFail()
-    {
-        $mockTranslator = $this->createMock(\Starlit\Utils\Validation\ValidatorTranslatorInterface::class);
-
-        $mockTranslator->expects($this->atLeastOnce())
-            ->method('trans')
-            ->will($this->returnValue('some error msg'));
-        $entity = new TestDbEntity();
-        $errorMsgs = $entity->validateAndSetDbData(['someName' => 'wohoaaaaaaa'], $mockTranslator);
-
-        $this->assertNotEmpty($errorMsgs);
-        $this->assertNotEquals($entity->__call('getSomeName'), 'wohoaaaaaaa');
-    }
     public function testGetDbTableName()
     {
         $entity = new TestDbEntity();

@@ -10,9 +10,6 @@ namespace Starlit\Db;
 
 use Starlit\Utils\Str;
 use Starlit\Utils\Arr;
-use Starlit\Utils\Validation\Validator;
-use Starlit\Utils\Validation\ValidatorTranslatorInterface;
-use Symfony\Component\Translation\TranslatorInterface as SymfonyTranslatorInterface;
 
 /**
  * Abstract class to model a single database row into an object.
@@ -34,12 +31,11 @@ abstract class AbstractDbEntity implements \Serializable
      *
      * $dbProperties = [
      *     'productId' => ['type' => 'int'],
-     *     'otherId'   => ['type' => 'int', 'required' => true, 'validate' => false],
+     *     'otherId'   => ['type' => 'int', 'required' => true,],
      *     'name'      => ['type' => 'string', 'maxLength' => 10, 'required' => true, 'default' => 'Some name'],
      * ];
      *
      * 'type' => 'int'     Corresponding PHP type (required).
-     * 'validate' => false Turn off data validation, for example on required key fields that are set internally.
      * 'required' => true  The value have to be set (not '', null, false)
      * 'nonEmpty' => true  The value should not be empty ('', 0, null)
      *
@@ -552,56 +548,6 @@ abstract class AbstractDbEntity implements \Serializable
         return isset(static::$dbProperties[$propertyName]['nonEmpty'])
             ? static::$dbProperties[$propertyName]['nonEmpty']
             : false;
-    }
-
-    /**
-     * Get validator for object's database data.
-     *
-     * @param ValidatorTranslatorInterface|SymfonyTranslatorInterface|null $translator
-     * @return Validator
-     */
-    public function getDbDataValidator($translator = null)
-    {
-        $validRuleProperties = Validator::getValidRuleProperties();
-        $fieldsRuleProperties = [];
-        foreach (static::$dbProperties as $propertyName => $attributes) {
-            // Always validate if validate is not explicitly set to false
-            if (!isset($attributes['validate']) || $attributes['validate'] === true) {
-                $fieldsRuleProperties[$propertyName] = [];
-                foreach ($validRuleProperties as $ruleName) {
-                    if (isset($attributes[$ruleName])) {
-                        $fieldsRuleProperties[$propertyName][$ruleName] = $attributes[$ruleName];
-                    }
-                }
-            }
-        }
-
-        $validator = new Validator($fieldsRuleProperties, $translator);
-
-        return $validator;
-    }
-
-    /**
-     * Validate and (if no error messages) set database data.
-     *
-     * @param array  $data The data (e.g. from a form post) to be validated and set
-     * @param ValidatorTranslatorInterface|SymfonyTranslatorInterface|null $translator
-     * @return array An array with all (if any) of error messages
-     */
-    public function validateAndSetDbData(array $data, $translator = null)
-    {
-        // Get arguments this method was called with, to allow passthrough to getDbDataValidator()
-        $args = array_slice(func_get_args(), 1);
-
-        $validator = call_user_func_array([$this, 'getDbDataValidator'], $args);
-        $errorMessages = $validator->validate($data);
-
-        if (empty($errorMessages)) {
-            // Set db data from validated data because validator normalizes data as well (like trim)
-            $this->setDbData($validator->getValidatedData());
-        }
-
-        return $errorMessages;
     }
 
     /**
