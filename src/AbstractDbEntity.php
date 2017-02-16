@@ -371,11 +371,14 @@ abstract class AbstractDbEntity implements \Serializable
         }
     }
 
-    /**
-     */
     public function clearModifiedDbProperties()
     {
         $this->modifiedDbProperties = [];
+    }
+
+    public function markAllDbPropertiesAsModified()
+    {
+        $this->modifiedDbProperties = array_keys(static::$dbProperties);
     }
 
     /**
