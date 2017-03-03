@@ -110,10 +110,10 @@ class BasicDbEntityService
             }
         }
 
-        // Convert & check data
+        // Check data
         $sqlData = [];
         foreach ($dataToSave as $propertyName => $value) {
-            if ($value
+            if (!empty($value) && is_scalar($value)
                 && $dbEntity->getDbPropertyMaxLength($propertyName)
                 && mb_strlen($value) > $dbEntity->getDbPropertyMaxLength($propertyName)
             ) {
@@ -122,7 +122,9 @@ class BasicDbEntityService
                 );
             } elseif (empty($value) && $dbEntity->getDbPropertyNonEmpty($propertyName)) {
                 throw new \RuntimeException("Database field \"{$propertyName}\" is empty and required");
-            } elseif ((((string) $value) === '') && $dbEntity->getDbPropertyRequired($propertyName)) {
+            } elseif (((is_scalar($value) && ((string) $value) === '') || (!is_scalar($value) && empty($value)))
+                && $dbEntity->getDbPropertyRequired($propertyName)
+            ) {
                 throw new \RuntimeException("Database field \"{$propertyName}\" is required to be set");
             }
 

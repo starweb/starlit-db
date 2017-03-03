@@ -87,7 +87,6 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
         $method->invoke($entity, 'someName', 123, true);
 
-
         // Call protected get method
         $method = new \ReflectionMethod(TestDbEntity::class, 'getDbValue');
         $method->setAccessible(true);
@@ -114,6 +113,22 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
 
         $setMethod->invoke($entity, 'someOtherFloat', null);
         $this->assertEquals(0.0, $getMethod->invoke($entity, 'someOtherFloat'));
+    }
+
+    public function testSetDbValueDateTime()
+    {
+        $entity = new TestDbEntity();
+
+        $dateTime = new \DateTime('2000-01-01 00:00:00');
+        $entity->setSomeDate($dateTime);
+        $this->assertSame($dateTime, $entity->getSomeDate());
+
+        $entity->setSomeDate($dateTime->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(\DateTimeInterface::class, $entity->getSomeDate());
+        $this->assertSame($dateTime->format('Y-m-d H:i:s'), $entity->getSomeDate()->format('Y-m-d H:i:s'));
+
+        $entity->setSomeDate(null);
+        $this->assertNull($entity->getSomeDate());
     }
 
     public function testSetDbValueNoChange()
@@ -452,11 +467,12 @@ class TestDbEntity extends AbstractDbEntity
     protected static $dbTableName = 'someTable';
 
     protected static $dbProperties = [
-        'someId' => ['type' => 'int'],
-        'someName' => ['type' => 'string', 'default' => 'test', 'maxLength' => 5, 'required' => true],
-        'someField' => ['type' => 'bool'],
-        'someFloat' => ['type' => 'float', 'default' => null],
+        'someId'         => ['type' => 'int'],
+        'someName'       => ['type' => 'string', 'default' => 'test', 'maxLength' => 5, 'required' => true],
+        'someField'      => ['type' => 'bool'],
+        'someFloat'      => ['type' => 'float', 'default' => null],
         'someOtherFloat' => ['type' => 'float', 'nonEmpty' => true, 'default' => 1.0],
+        'someDate'       => ['type' => 'dateTime', 'required' => true, 'default' => null],
     ];
 
     protected static $primaryDbPropertyKey = 'someId';

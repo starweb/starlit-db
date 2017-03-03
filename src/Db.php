@@ -186,13 +186,14 @@ class Db
     {
         $this->connect();
 
+        $dbParameters = $this->prepareParameters($parameters);
         try {
             $pdoStatement = $this->pdo->prepare($sql);
-            $pdoStatement->execute($this->prepareParameters($parameters));
+            $pdoStatement->execute($dbParameters);
 
             return $pdoStatement;
         } catch (PDOException $e) {
-            throw new QueryException($e, $sql, $parameters);
+            throw new QueryException($e, $sql, $dbParameters);
         }
     }
 
@@ -290,6 +291,8 @@ class Db
         foreach ($parameters as &$parameterValue) {
             if (is_bool($parameterValue)) {
                 $parameterValue = (int) $parameterValue;
+            } elseif ($parameterValue instanceof \DateTimeInterface) {
+                $parameterValue = $parameterValue->format('Y-m-d H:i:s');
             } elseif (!is_scalar($parameterValue) && $parameterValue !== null) {
                 throw new \InvalidArgumentException(
                     sprintf('Invalid db parameter type "%s"', gettype($parameterValue))

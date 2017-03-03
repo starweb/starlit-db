@@ -21,26 +21,24 @@ class QueryException extends DbException
     /**
      * @var array
      */
-    protected $parameters;
+    protected $dbParameters;
 
     /**
-     * Constructor.
-     *
      * @param \PDOException $e
      * @param string        $sql
-     * @param array         $parameters
+     * @param array         $dbParameters
      */
-    public function __construct(\PDOException $e, $sql = '', array $parameters = [])
+    public function __construct(\PDOException $e, $sql = '', array $dbParameters = [])
     {
         $this->sql = $sql;
-        $this->parameters = $parameters;
+        $this->dbParameters = $dbParameters;
 
         $extraMessage = '';
         if (!empty($this->sql)) {
             $extraMessage .= " [SQL: {$this->sql}]";
         }
-        if (!empty($this->parameters)) {
-            $extraMessage .= " [Parameters: " . implode(', ', $this->parameters) . "]";
+        if (!empty($this->dbParameters)) {
+            $extraMessage .= " [Parameters: " . implode(', ', $this->dbParameters) . "]";
         }
 
         parent::__construct($e, $extraMessage);
@@ -57,8 +55,8 @@ class QueryException extends DbException
     /**
      * @return array
      */
-    public function getParameters()
+    public function getDbParameters()
     {
-        return $this->parameters;
+        return $this->dbParameters;
     }
 }

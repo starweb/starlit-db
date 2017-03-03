@@ -70,6 +70,26 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($rowCount, $result);
     }
 
+    public function testDateTimeParameterIsConvertedToString()
+    {
+        $dateTime = new \DateTime('2000-01-01 00:00:00');
+        $sqlParameters = [$dateTime];
+        $sql = '';
+
+        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+
+        $this->mockPdo
+            ->method('prepare')
+            ->with($sql)
+            ->willReturn($mockPdoStatement);
+
+        $mockPdoStatement
+            ->method('execute')
+            ->with([$dateTime->format('Y-m-d H:i:s')]);
+
+        $this->db->exec($sql, $sqlParameters);
+    }
+
     public function testExecFailThrowsQueryException()
     {
         $this->mockPdo

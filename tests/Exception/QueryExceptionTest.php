@@ -33,8 +33,8 @@ class QueryExceptionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->sql, $this->exception->getSql());
     }
 
-    public function testGetParameters()
+    public function testGetDbParameters()
     {
-        $this->assertEquals($this->parameters, $this->exception->getParameters());
+        $this->assertEquals($this->parameters, $this->exception->getDbParameters());
     }
 }

@@ -123,6 +123,15 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
         $this->dbService->save($entity);
     }
 
+    public function testSaveFailsOnDateTimeRequiredError()
+    {
+        $entity = new ServiceDateTimeTestEntity();
+        $entity->setSomeDate(null);
+
+        $this->expectException('\RuntimeException');
+        $this->dbService->save($entity);
+    }
+
     public function testSaveFailsOnEmptyError()
     {
         $entity = new ServiceTestEntity();
@@ -201,4 +210,16 @@ class ServiceTestMultiKeyEntity extends AbstractDbEntity
     ];
 
     protected static $primaryDbPropertyKey = ['id', 'id2'];
+}
+
+class ServiceDateTimeTestEntity extends AbstractDbEntity
+{
+    protected static $dbTableName = 'someTable';
+
+    protected static $dbProperties = [
+        'id'             => ['type' => 'int'],
+        'someDate'       => ['type' => 'dateTime', 'required' => true, 'default' => null],
+    ];
+
+    protected static $primaryDbPropertyKey = 'id';
 }

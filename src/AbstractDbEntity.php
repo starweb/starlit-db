@@ -73,10 +73,11 @@ abstract class AbstractDbEntity implements \Serializable
      * @var array
      */
     private static $typeDefaults = [
-        'string' => '',
-        'int'    => 0,
-        'float'  => 0.0,
-        'bool'   => false,
+        'string'   => '',
+        'int'      => 0,
+        'float'    => 0.0,
+        'bool'     => false,
+        'dateTime' => null,
     ];
 
     /**
@@ -280,6 +281,10 @@ abstract class AbstractDbEntity implements \Serializable
             // Set null when empty and default is null
             if ($value === '' && $nullIsAllowed) {
                  $value = null;
+            } elseif ($type === 'dateTime') {
+                if (!($value instanceof \DateTimeInterface)) {
+                    $value = $this->createDateTimeDbValue($value);
+                }
             } else {
                 settype($value, $type);
             }
@@ -292,6 +297,22 @@ abstract class AbstractDbEntity implements \Serializable
                 $this->modifiedDbProperties[] = $property;
             }
         }
+    }
+
+    /**
+     * @param string $value
+     * @return \DateTime|\Carbon\Carbon|null
+     */
+    protected function createDateTimeDbValue($value)
+    {
+        static $carbonExists = null;
+        if ($carbonExists === true
+            || ($carbonExists === null && ($carbonExists = class_exists(\Carbon\Carbon::class)))
+        ) {
+            return new \Carbon\Carbon($value);
+        }
+
+        return new \DateTime($value);
     }
 
     /**
