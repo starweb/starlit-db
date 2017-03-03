@@ -397,7 +397,7 @@ abstract class AbstractDbEntity implements \Serializable
         $this->modifiedDbProperties = [];
     }
 
-    public function markAllDbPropertiesAsModified()
+    public function setAllDbPropertiesAsModified()
     {
         $this->modifiedDbProperties = array_keys(static::$dbProperties);
     }

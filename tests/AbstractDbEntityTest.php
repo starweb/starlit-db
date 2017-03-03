@@ -206,12 +206,12 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($entity->getModifiedDbData());
     }
 
-    public function testMarkAllDbPropertiesAsModified()
+    public function testSetAllDbPropertiesAsModified()
     {
         $entity = new TestDbEntity();
         $this->assertEmpty($entity->getModifiedDbData());
 
-        $entity->markAllDbPropertiesAsModified();
+        $entity->setAllDbPropertiesAsModified();
         $this->assertEquals($entity->getDbData(), $entity->getModifiedDbData());
     }
 
