@@ -357,19 +357,47 @@ class Db
     /**
      * @param string $table
      * @param array $data
+     * @param bool $updateOnDuplicateKey
      * @return int The number of rows affected
      */
-    public function insert($table, array $data)
+    public function insert($table, array $data, $updateOnDuplicateKey = false)
     {
-        $fields = array_keys($data);
-        $valuePlaceholders = implode(', ', array_fill(0, count($fields), '?'));
+        $sql = 'INSERT INTO `' . $table . '`';
+        if (empty($data)) {
+            $sql .= "\nVALUES ()";
+            $parameters = [];
+        } else {
+            $fields = array_keys($data);
+            $fieldsSql = '`' . implode('`, `', $fields) . '`';
+            $placeholdersSql = implode(', ', array_fill(0, count($fields), '?'));
 
-        $sql = 'INSERT INTO `' . $table . '` '
-            . ($fields ? '(`' . implode('`, `', $fields) . '`)' : '') . "\n"
-            . ($fields ? 'VALUES (' . $valuePlaceholders . ')' : 'VALUES ()')
-        ;
+            $sql .= ' (' . $fieldsSql . ")\n";
+            $sql .= 'VALUES (' . $placeholdersSql . ")\n";
 
-        return $this->exec($sql, array_values($data));
+            $parameters = array_values($data);
+
+            if ($updateOnDuplicateKey) {
+                $assignmentSql = $this->getAssignmentSql(array_fill_keys($fields, '?'));
+                $sql .= 'ON DUPLICATE KEY UPDATE ' . $assignmentSql;
+                $parameters = array_merge($parameters, $parameters);
+            }
+        }
+
+        return $this->exec($sql, $parameters);
+    }
+
+    /**
+     * @param array $assignmentData
+     * @return string
+     */
+    protected function getAssignmentSql(array $assignmentData)
+    {
+        $assignments = [];
+        foreach ($assignmentData as $field => $value) {
+            $assignments[] = sprintf('`%s` = %s', $field, $value);
+        }
+
+        return implode(', ', $assignments);
     }
 
     /**
@@ -381,13 +409,11 @@ class Db
      */
     public function update($table, array $data, $whereSql = '', array $whereParameters = [])
     {
-        $setStrings = [];
-        foreach (array_keys($data) as $field) {
-            $setStrings[] = '`' . $field . '` = ?';
-        }
+        $fields = array_keys($data);
+        $assignmentSql = $this->getAssignmentSql(array_fill_keys($fields, '?'));
 
         $sql = 'UPDATE `' . $table . "`\n"
-            . 'SET ' . implode(', ', $setStrings)
+            . 'SET ' . $assignmentSql
             . ($whereSql ? "\nWHERE " . $whereSql : '')
         ;
 

@@ -251,7 +251,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
     {
         $table = 'test_table';
         $insertData = ['id' => 1, 'name' => 'one'];
-        $expectedSql = "INSERT INTO `" . $table . "` (`id`, `name`)\nVALUES (?, ?)";
+        $expectedSql = "INSERT INTO `" . $table . "` (`id`, `name`)\nVALUES (?, ?)\n";
         $expectedAffectedRows = 1;
 
         $mockDb = $this->createPartialMock(Db::class, ['exec']);
@@ -262,6 +262,36 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
 
         $this->assertEquals($expectedAffectedRows, $mockDb->insert($table, $insertData));
+    }
+
+    public function testInsertWithoutDataCallsExecWithSql()
+    {
+        $table = 'test_table';
+        $insertData = [];
+        $expectedSql = "INSERT INTO `" . $table . "`\nVALUES ()";
+
+        $mockDb = $this->createPartialMock(Db::class, ['exec']);
+        $mockDb->expects($this->once())
+            ->method('exec')
+            ->with($expectedSql, array_values($insertData));
+
+        $mockDb->insert($table, $insertData);
+    }
+
+    public function testInsertWithUpdateOnDuplicateDataCallsExecWithSql()
+    {
+        $table = 'test_table';
+        $insertData = ['id' => 1, 'name' => 'one'];
+        $expectedSql = "INSERT INTO `" . $table . "` (`id`, `name`)\nVALUES (?, ?)\n"
+            . 'ON DUPLICATE KEY UPDATE `id` = ?, `name` = ?';
+        $expectedParameters = array_merge(array_values($insertData), array_values($insertData));
+
+        $mockDb = $this->createPartialMock(Db::class, ['exec']);
+        $mockDb->expects($this->once())
+            ->method('exec')
+            ->with($expectedSql, $expectedParameters);
+
+        $mockDb->insert($table, $insertData, true);
     }
 
     public function testUpdateCallsExecWithSqlAndParams()

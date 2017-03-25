@@ -478,6 +478,20 @@ abstract class AbstractDbEntity implements \Serializable
     /**
      * @return array
      */
+    public function getDbRowData()
+    {
+        $rowData = [];
+        foreach ($this->getDbData() as $propertyName => $value) {
+            $dbFieldName = static::getDbFieldName($propertyName);
+            $rowData[$dbFieldName] = $value;
+        }
+
+        return $rowData;
+    }
+
+    /**
+     * @return array
+     */
     public function getDbDataWithoutPrimary()
     {
         $dbDataWithoutPrimary = $this->dbData;

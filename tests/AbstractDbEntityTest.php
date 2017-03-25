@@ -247,6 +247,14 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('bla', $entity->getDbData());
     }
 
+    public function testGetDbRowData()
+    {
+        $entity = new TestDbEntity();
+        $entity->setDbData(['someName' => 'bla']);
+
+        $this->assertArrayHasKey('some_name', $entity->getDbRowData());
+    }
+
     public function testGetDbDataWithoutPrimary()
     {
         $entity = new TestDbEntity();
