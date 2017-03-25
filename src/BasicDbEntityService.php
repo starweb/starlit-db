@@ -190,7 +190,7 @@ class BasicDbEntityService
     {
         if (is_array($dbEntity->getPrimaryDbPropertyKey())) {
             $whereStrings = [];
-            foreach ($dbEntity->getPrimaryDbPropertyKey() as $primaryKeyPart) {
+            foreach ($dbEntity->getPrimaryDbFieldKey() as $primaryKeyPart) {
                 $whereStrings[] = '`' . $primaryKeyPart . '` = ?';
             }
             $whereSql = implode(' AND ', $whereStrings);

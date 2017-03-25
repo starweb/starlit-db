@@ -98,7 +98,7 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $entity->getDbTableName(),
                 ['some_name' => 'A Name'],
-                '`id` = ? AND `id2` = ?',
+                '`id` = ? AND `second_id` = ?',
                 $key
             );
 
@@ -204,12 +204,12 @@ class ServiceTestMultiKeyEntity extends AbstractDbEntity
 
     protected static $dbProperties = [
         'id'             => ['type' => 'int'],
-        'id2'            => ['type' => 'int'],
+        'secondId'       => ['type' => 'int'],
         'someName'       => ['type' => 'string', 'required' => true, 'maxLength' => 10],
         'someValue'      => ['type' => 'int', 'default' => 1, 'nonEmpty' => true],
     ];
 
-    protected static $primaryDbPropertyKey = ['id', 'id2'];
+    protected static $primaryDbPropertyKey = ['id', 'secondId'];
 }
 
 class ServiceDateTimeTestEntity extends AbstractDbEntity
