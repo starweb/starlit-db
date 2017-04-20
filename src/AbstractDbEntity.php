@@ -755,4 +755,18 @@ abstract class AbstractDbEntity implements \Serializable
         $dataToMerge = $otherEntity->getModifiedDbData();
         $this->setDbData($dataToMerge);
     }
+
+    /**
+     * Method to override is one wishes to run something before an object is saved
+     */
+    public function onBeforeSave()
+    {
+    }
+
+    /**
+     * Method to override is one wishes to run something after an object is saved
+     */
+    public function onAfterSave()
+    {
+    }
 }
