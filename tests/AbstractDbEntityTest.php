@@ -35,6 +35,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $entity = new TestDbEntity();
         $entity->setPrimaryDbValue(6);
         $this->assertEquals(6, $entity->getPrimaryDbValue());
+        $this->assertEquals(6, $entity->getSomeId());
     }
 
     public function testSetGetPrimaryDbValueWithMultiKey()
@@ -43,6 +44,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $entity = new TestDbEntityMultiPrimary();
         $entity->setPrimaryDbValue($key);
         $this->assertEquals($key, $entity->getPrimaryDbValue());
+        $this->assertEquals($key, [$entity->getSomeId(), $entity->getSomeOtherId()]);
     }
 
     public function testSetPrimaryDbValueWithInvalidMultiKey()
@@ -274,23 +276,26 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testSetDbDataFromRow()
     {
+        $primaryDbValue = 123;
+
         // Test with less properties than there are
         $rowData = [
-            'some_id' => 123,
+            'some_id' => $primaryDbValue,
             'some_name' => 'asd',
         ];
         $desiredResult = [
-            'someId' => 123,
+            'someId' => $primaryDbValue,
             'someName' => 'asd',
         ];
         $entity = new TestDbEntity();
 
         $entity->setDbDataFromRow($rowData);
         $this->assertEquals($desiredResult, array_slice($entity->getDbData(), 0, 2));
+        $this->assertEquals($primaryDbValue, $entity->getPrimaryDbValue());
 
         // Test with more properties than there are
         $rowData2 = [
-            'some_id' => 123,
+            'some_id' => $primaryDbValue,
             'some_name' => 'asd',
             'some_field' => '1',
             'some_float' => 123,
@@ -298,7 +303,7 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
             'unknown_prop' => 'asd',
         ];
         $desiredResult2 = [
-            'someId' => 123,
+            'someId' => $primaryDbValue,
             'someName' => 'asd',
             'someField' => true,
             'someFloat' => 123,
@@ -311,18 +316,20 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructWithRowData()
     {
+        $primaryDbValue = 123;
         $rowData = [
-            'some_id' => 123,
+            'some_id' => $primaryDbValue,
             'some_name' => 'asd',
         ];
         $desiredResult = [
-            'someId' => 123,
+            'someId' => $primaryDbValue,
             'someName' => 'asd',
         ];
 
         $entity = new TestDbEntity($rowData);
 
         $this->assertEquals($desiredResult, array_slice($entity->getDbData(), 0, 2));
+        $this->assertEquals($primaryDbValue, $entity->getPrimaryDbValue());
     }
 
     public function testDeleteFromDbOnSave()

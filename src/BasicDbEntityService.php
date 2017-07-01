@@ -85,7 +85,8 @@ class BasicDbEntityService
         }
 
         if ($dbEntity->shouldInsertOnDbSave()) {
-            // Note that database data always contains all properties, with defaults for non set properties
+            // Note that database data always contains all properties,
+            // with defaults for non set properties
             $dataToSave = $dbEntity->getDbData();
         } else {
             if ($dbEntity->hasModifiedDbProperties()) {
@@ -95,18 +96,6 @@ class BasicDbEntityService
                 // (we always want to insert if no id exist, since some child objects might
                 // depend on the this primary id being available)
                 return false;
-            }
-        }
-
-        // We don't the want to insert/update primary value unless forced insert
-        if (!$dbEntity->shouldForceDbInsertOnSave()) {
-            $primaryKey = $dbEntity->getPrimaryDbPropertyKey();
-            if (is_array($primaryKey)) {
-                foreach ($primaryKey as $keyPart) {
-                    unset($dataToSave[$keyPart]);
-                }
-            } else {
-                unset($dataToSave[$primaryKey]);
             }
         }
 

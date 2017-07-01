@@ -65,7 +65,10 @@ class BasicDbEntityServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->mockDb->expects($this->once())
             ->method('insert')
-            ->with($entity->getDbTableName(), ['some_name' => 'A Name', 'some_value' => 1]);
+            ->with(
+                $entity->getDbTableName(),
+                ['some_name' => 'A Name', 'some_value' => 1, 'id' => 0]
+            );
 
         $this->dbService->save($entity);
     }
