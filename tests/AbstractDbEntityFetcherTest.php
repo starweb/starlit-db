@@ -63,18 +63,11 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod($this->dbFetcher, 'getFetchPaginationResult');
         $method->setAccessible(true);
 
-        $fakeObjects = [
-            [
-                'id' => 'foo',
-            ],
-            [
-                'id' => 'bar',
-            ]
-        ];
 
-        $objects = $method->invoke($this->dbFetcher, $fakeObjects, false);
-        $this->assertArrayHasKey('foo', $objects);
-        $this->assertArrayHasKey('bar', $objects);
+        $fakeObjects = [1, 2];
+        $result = $method->invoke($this->dbFetcher, $fakeObjects, false);
+
+        $this->assertEquals($fakeObjects, $result);
     }
 
     public function testGetFetchPaginationResultPagination()
@@ -83,24 +76,16 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod($this->dbFetcher, 'getFetchPaginationResult');
         $method->setAccessible(true);
 
-        $fakeObjects = [
-            [
-                'id' => 'foo',
-            ],
-            [
-                'id' => 'bar',
-            ]
-        ];
+
+        $fakeObjects = [1, 2];
 
         $this->mockDb->expects($this->once())
             ->method('fetchValue')
             ->will($this->returnValue(count($fakeObjects)));
 
         list($objects, $totalRowCount) = $method->invoke($this->dbFetcher, $fakeObjects, true);
-
+        $this->assertEquals($fakeObjects, $objects);
         $this->assertEquals(count($fakeObjects), $totalRowCount);
-        $this->assertArrayHasKey('foo', $objects);
-        $this->assertArrayHasKey('bar', $objects);
     }
 
     public function testGetDbEntitiesFromRows()
