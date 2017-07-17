@@ -130,10 +130,16 @@ class BasicDbEntityService
                 $sqlData
             );
 
+            // Update entity with auto increment value
             if (!is_array($dbEntity->getPrimaryDbPropertyKey())
                 && !empty($lastInsertId = $this->db->getLastInsertId())
             ) {
                 $dbEntity->setPrimaryDbValue($lastInsertId);
+            } else {
+                // For entities with for example string primary keys, we update primary value
+                // with value/values from db data, indicating that the entity is now
+                // in database/loaded.
+                $dbEntity->updatePrimaryDbValueFromDbData();
             }
         // Update existing database row
         } else {

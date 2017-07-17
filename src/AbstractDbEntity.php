@@ -249,6 +249,52 @@ abstract class AbstractDbEntity implements \Serializable
     }
 
     /**
+     * Update primary database value with data from set database data.
+     */
+    public function updatePrimaryDbValueFromDbData()
+    {
+        $dbDataPrimaryValue = $this->getDbDataPrimaryValue();
+
+        if ($dbDataPrimaryValue !== $this->getDbDataPrimaryDefaultValue()) {
+            $this->setPrimaryDbValue($dbDataPrimaryValue);
+        }
+    }
+
+    /**
+     * @return mixed|array
+     */
+    protected function getDbDataPrimaryValue()
+    {
+        if (is_array(static::$primaryDbPropertyKey)) {
+            $primaryValues = [];
+            foreach (static::$primaryDbPropertyKey as $propertyName) {
+                $primaryValues[] = $this->getDbValue($propertyName);
+            }
+
+            return $primaryValues;
+        }
+
+        return $this->getDbValue(static::$primaryDbPropertyKey);
+    }
+
+    /**
+     * @return mixed|array
+     */
+    private function getDbDataPrimaryDefaultValue()
+    {
+        if (is_array(static::$primaryDbPropertyKey)) {
+            $primaryValues = [];
+            foreach (static::$primaryDbPropertyKey as $propertyName) {
+                $primaryValues[] = $this->getDefaultDbPropertyValue($propertyName);
+            }
+
+            return $primaryValues;
+        }
+
+        return $this->getDefaultDbPropertyValue(static::$primaryDbPropertyKey);
+    }
+
+    /**
      * @return bool
      */
     public function isNewDbEntity()
@@ -523,10 +569,7 @@ abstract class AbstractDbEntity implements \Serializable
             }
         }
 
-        $primaryDbValue = $this->getPrimaryDbValueFromRow($rowData);
-        if (!empty($primaryDbValue)) {
-            $this->setPrimaryDbValue($primaryDbValue);
-        }
+        $this->updatePrimaryDbValueFromDbData();
     }
 
     /**

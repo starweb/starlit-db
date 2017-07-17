@@ -54,6 +54,28 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $entity->setPrimaryDbValue(5);
     }
 
+    public function testUpdatePrimaryDbValueFromDbDataUpdates()
+    {
+        $id = 123;
+        $entity = new TestDbEntity();
+        $entity->setSomeId($id);
+
+        $this->assertEmpty($entity->getPrimaryDbValue());
+        $entity->updatePrimaryDbValueFromDbData();
+
+        $this->assertSame($id, $entity->getPrimaryDbValue());
+    }
+
+    public function testUpdatePrimaryDbValueFromDbDataDoesntUpdateEmpty()
+    {
+        $entity = new TestDbEntity();
+        $entity->setSomeId(0);
+
+        $entity->updatePrimaryDbValueFromDbData();
+
+        $this->assertEmpty($entity->getPrimaryDbValue());
+    }
+
     public function testIsNewDbEntity()
     {
         $entity = new TestDbEntity();
