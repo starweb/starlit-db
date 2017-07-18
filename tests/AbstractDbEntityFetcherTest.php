@@ -91,7 +91,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
     public function testGetFetchPaginationAsDbEntitiesResult()
     {
         // Use reflection to make protected method accessible
-        $method = new \ReflectionMethod($this->dbFetcher, 'getFetchPaginationAsDbEntitiesResult');
+        $method = new \ReflectionMethod($this->dbFetcher, 'getDbEntitiesFromRowsPaginated');
         $method->setAccessible(true);
         $fakeObjects = [
             [
@@ -109,7 +109,7 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
     public function testGetFetchPaginationAsDbEntitiesResultPagination()
     {
         // Use reflection to make protected method accessible
-        $method = new \ReflectionMethod($this->dbFetcher, 'getFetchPaginationAsDbEntitiesResult');
+        $method = new \ReflectionMethod($this->dbFetcher, 'getDbEntitiesFromRowsPaginated');
         $method->setAccessible(true);
         $fakeObjects = [
             [

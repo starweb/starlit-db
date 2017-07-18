@@ -97,7 +97,7 @@ abstract class AbstractDbEntityFetcher
      * @param bool  $pagination
      * @return array
      */
-    protected function getFetchPaginationAsDbEntitiesResult(array $rows, $pagination)
+    protected function getDbEntitiesFromRowsPaginated(array $rows, $pagination)
     {
         if ($pagination) {
             $totalRowCount = $this->db->fetchValue('SELECT FOUND_ROWS()');
