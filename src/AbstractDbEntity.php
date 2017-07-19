@@ -88,6 +88,15 @@ abstract class AbstractDbEntity implements \Serializable
     private $dbData = [];
 
     /**
+     * The primary key value currently set in database. This
+     * can be different from the value in $dbData if the primary value
+     * is changed.
+     *
+     * @var mixed
+     */
+    private $primaryDbValue;
+
+    /**
      * Database fields that has had their value modified since init/load.
      *
      * @var array
@@ -153,7 +162,8 @@ abstract class AbstractDbEntity implements \Serializable
      */
     public function setPrimaryDbValueOrRowData($primaryDbValueOrRowData = null)
     {
-        // Row data would ba an associative array (not sequential, that would indicate a multi column primary key)
+        // Row data would be an associative array (i.e. not sequential, that would
+        // indicate a multi column primary key)
         if (is_array($primaryDbValueOrRowData) && !isset($primaryDbValueOrRowData[0])) {
             $this->setDbDataFromRow($primaryDbValueOrRowData);
         } else {
@@ -199,20 +209,16 @@ abstract class AbstractDbEntity implements \Serializable
     }
 
     /**
+     * The primary key value currently set in database.
+     *
+     * This can be different from the value/values in $dbData
+     * if a primary value is changed.
+     *
      * @return mixed
      */
     public function getPrimaryDbValue()
     {
-        if (is_array(static::$primaryDbPropertyKey)) {
-            $primaryValues = [];
-            foreach (static::$primaryDbPropertyKey as $keyPart) {
-                $primaryValues[] = $this->dbData[$keyPart];
-            }
-
-            return $primaryValues;
-        }
-
-        return $this->dbData[static::$primaryDbPropertyKey];
+        return $this->primaryDbValue;
     }
 
     /**
@@ -220,11 +226,18 @@ abstract class AbstractDbEntity implements \Serializable
      */
     public function setPrimaryDbValue($primaryDbValue)
     {
-        if (is_array(static::$primaryDbPropertyKey)) {
-            if (!is_array($primaryDbValue)) {
-                throw new \InvalidArgumentException("Primary db value should be an array");
-            }
+        $typedPrimaryDbValue = $this->getPrimaryDbValueWithPropertyType($primaryDbValue);
 
+        $this->primaryDbValue = $typedPrimaryDbValue;
+        $this->setDbDataPrimaryValue($typedPrimaryDbValue);
+    }
+
+    /**
+     * @param mixed $primaryDbValue
+     */
+    protected function setDbDataPrimaryValue($primaryDbValue)
+    {
+        if (is_array(static::$primaryDbPropertyKey)) {
             reset($primaryDbValue);
             foreach (static::$primaryDbPropertyKey as $keyPart) {
                 $this->dbData[$keyPart] = current($primaryDbValue);
@@ -236,14 +249,60 @@ abstract class AbstractDbEntity implements \Serializable
     }
 
     /**
+     * Update primary database value with data from set database data.
+     */
+    public function updatePrimaryDbValueFromDbData()
+    {
+        $dbDataPrimaryValue = $this->getDbDataPrimaryValue();
+
+        if ($dbDataPrimaryValue !== $this->getDbDataPrimaryDefaultValue()) {
+            $this->setPrimaryDbValue($dbDataPrimaryValue);
+        }
+    }
+
+    /**
+     * @return mixed|array
+     */
+    protected function getDbDataPrimaryValue()
+    {
+        if (is_array(static::$primaryDbPropertyKey)) {
+            $primaryValues = [];
+            foreach (static::$primaryDbPropertyKey as $propertyName) {
+                $primaryValues[] = $this->getDbValue($propertyName);
+            }
+
+            return $primaryValues;
+        }
+
+        return $this->getDbValue(static::$primaryDbPropertyKey);
+    }
+
+    /**
+     * @return mixed|array
+     */
+    private function getDbDataPrimaryDefaultValue()
+    {
+        if (is_array(static::$primaryDbPropertyKey)) {
+            $primaryValues = [];
+            foreach (static::$primaryDbPropertyKey as $propertyName) {
+                $primaryValues[] = $this->getDefaultDbPropertyValue($propertyName);
+            }
+
+            return $primaryValues;
+        }
+
+        return $this->getDefaultDbPropertyValue(static::$primaryDbPropertyKey);
+    }
+
+    /**
      * @return bool
      */
     public function isNewDbEntity()
     {
         if (is_array(static::$primaryDbPropertyKey)) {
             // Multiple column keys have to use explicit force insert because we have no way
-            // to detect if it's a new entity (can't leave more than one primary field empty on insert because
-            // db can't have two auto increment columns)
+            // to detect if it's a new entity (can't leave more than one primary field empty
+            // on insert because db can't have two auto increment columns)
             throw new \LogicException("Can't detect if multi column primary key is a new entity");
         }
 
@@ -269,11 +328,28 @@ abstract class AbstractDbEntity implements \Serializable
      */
     protected function setDbValue($property, $value, $setAsModified = true, $force = false)
     {
+        $value = $this->getValueWithPropertyType($property, $value);
+
+        if ($this->dbData[$property] !== $value || $force) {
+            $this->dbData[$property] = $value;
+
+            if ($setAsModified && !$this->isDbPropertyModified($property)) {
+                $this->modifiedDbProperties[] = $property;
+            }
+        }
+    }
+
+    /**
+     * @param string $property
+     * @param mixed  $value
+     * @return mixed
+     */
+    private function getValueWithPropertyType(string $property, $value) {
         if (!isset(static::$dbProperties[$property])) {
             throw new \InvalidArgumentException("No database entity property[{$property}] exists");
         }
 
-        // Don't set type if value is null and allowed (allowed currently indicated by default => null)
+         // Don't set type if value is null and allowed (allowed currently indicated by default => null)
         $nullIsAllowed = (array_key_exists('default', static::$dbProperties[$property])
             && static::$dbProperties[$property]['default'] === null);
         if (!($value === null && $nullIsAllowed)) {
@@ -290,13 +366,40 @@ abstract class AbstractDbEntity implements \Serializable
             }
         }
 
-        if ($this->dbData[$property] !== $value || $force) {
-            $this->dbData[$property] = $value;
+        return $value;
+    }
 
-            if ($setAsModified && !$this->isDbPropertyModified($property)) {
-                $this->modifiedDbProperties[] = $property;
+    /**
+     * @param string $property
+     * @param mixed $value
+     * @return mixed
+     */
+    private function getPrimaryDbValueWithPropertyType($primaryDbValue) {
+        if (is_array(static::$primaryDbPropertyKey)) {
+            if (!is_array($primaryDbValue)
+                || count(static::$primaryDbPropertyKey) !== count($primaryDbValue)
+            ) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Primary db value should be an array of length %d',
+                    count(static::$primaryDbPropertyKey)
+                ));
             }
+
+            $primaryDbValueParts = [];
+            reset($primaryDbValue);
+            foreach (static::$primaryDbPropertyKey as $keyPart) {
+                $partValue = current($primaryDbValue);
+                $primaryDbValueParts[] = $this->getValueWithPropertyType($keyPart, $partValue);
+                next($primaryDbValue);
+            }
+
+            return $primaryDbValueParts;
         }
+
+        return $this->getValueWithPropertyType(
+            static::$primaryDbPropertyKey,
+            $primaryDbValue
+        );
     }
 
     /**
@@ -465,6 +568,28 @@ abstract class AbstractDbEntity implements \Serializable
                 }
             }
         }
+
+        $this->updatePrimaryDbValueFromDbData();
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getPrimaryDbValueFromRow(array $rowData)
+    {
+        if (is_array(static::$primaryDbPropertyKey)) {
+            $primaryValues = [];
+            foreach (static::$primaryDbPropertyKey as $keyPart) {
+                $fieldName = static::getDbFieldName($keyPart);
+                $primaryValues[] = $rowData[$fieldName] ?? null;
+            }
+
+            return $primaryValues;
+        }
+
+        $fieldName = static::getDbFieldName(static::$primaryDbPropertyKey);
+
+        return $rowData[$fieldName] ?? null;
     }
 
     /**
