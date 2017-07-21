@@ -91,6 +91,23 @@ abstract class AbstractDbEntityFetcher
     }
 
     /**
+     * Helper method to get pagination result as objects if pagination is requested.
+     *
+     * @param array $rows
+     * @param bool  $pagination
+     * @return array
+     */
+    protected function getDbEntitiesFromRowsPaginated(array $rows, $pagination)
+    {
+        if ($pagination) {
+            $totalRowCount = $this->db->fetchValue('SELECT FOUND_ROWS()');
+            return [$this->getDbEntitiesFromRows($rows), $totalRowCount];
+        }
+
+        return $this->getDbEntitiesFromRows($rows);
+    }
+
+    /**
      * @param array  $rows
      * @param string $keyPropertyName Optional, will default to primary if not provided
      * @return array

@@ -88,6 +88,46 @@ class AbstractDbEntityFetcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(count($fakeObjects), $totalRowCount);
     }
 
+    public function testGetFetchPaginationAsDbEntitiesResult()
+    {
+        // Use reflection to make protected method accessible
+        $method = new \ReflectionMethod($this->dbFetcher, 'getDbEntitiesFromRowsPaginated');
+        $method->setAccessible(true);
+        $fakeObjects = [
+            [
+                'id' => 'foo',
+            ],
+            [
+                'id' => 'bar',
+            ]
+        ];
+        $objects = $method->invoke($this->dbFetcher, $fakeObjects, false);
+        $this->assertArrayHasKey('foo', $objects);
+        $this->assertArrayHasKey('bar', $objects);
+    }
+
+    public function testGetFetchPaginationAsDbEntitiesResultPagination()
+    {
+        // Use reflection to make protected method accessible
+        $method = new \ReflectionMethod($this->dbFetcher, 'getDbEntitiesFromRowsPaginated');
+        $method->setAccessible(true);
+        $fakeObjects = [
+            [
+                'id' => 'foo',
+            ],
+            [
+                'id' => 'bar',
+            ]
+        ];
+        $this->mockDb->expects($this->once())
+            ->method('fetchValue')
+            ->will($this->returnValue(count($fakeObjects)));
+        list($objects, $totalRowCount) = $method->invoke($this->dbFetcher, $fakeObjects, true);
+        $this->assertEquals(count($fakeObjects), $totalRowCount);
+        $this->assertArrayHasKey('foo', $objects);
+        $this->assertArrayHasKey('bar', $objects);
+    }
+
     public function testGetDbEntitiesFromRows()
     {
         $rows = [
