@@ -486,6 +486,14 @@ abstract class AbstractDbEntity implements \Serializable
     }
 
     /**
+     * @return array
+     */
+    public function getModifiedDbProperties()
+    {
+        return $this->modifiedDbProperties;
+    }
+
+    /**
      * @param string $property
      */
     public function clearModifiedDbProperty($property)
