@@ -2,6 +2,8 @@
 
 namespace Starlit\Db;
 
+use Starlit\Db\Exception\QueryException;
+
 class DbTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -60,7 +62,8 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
         $mockPdoStatement->expects($this->once())
             ->method('execute')
-            ->with([1, 2.3, 1, 0, 'abc', null]);
+            ->with([1, 2.3, 1, 0, 'abc', null])
+            ->willReturn(true);
 
         $mockPdoStatement->expects($this->once())
             ->method('rowCount')
@@ -85,7 +88,8 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
         $mockPdoStatement
             ->method('execute')
-            ->with([$dateTime->format('Y-m-d H:i:s')]);
+            ->with([$dateTime->format('Y-m-d H:i:s')])
+            ->willReturn(true);
 
         $this->db->exec($sql, $sqlParameters);
     }
@@ -125,7 +129,8 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
         $mockPdoStatement->expects($this->once())
             ->method('execute')
-            ->with($sqlParameters);
+            ->with($sqlParameters)
+            ->willReturn(true);
 
         $mockPdoStatement->expects($this->once())
             ->method('fetch')
@@ -148,7 +153,8 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
         $mockPdoStatement->expects($this->once())
             ->method('execute')
-            ->with($sqlParameters);
+            ->with($sqlParameters)
+            ->willReturn(true);
 
         $mockPdoStatement->expects($this->once())
             ->method('fetchAll')
@@ -171,7 +177,8 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
         $mockPdoStatement->expects($this->once())
             ->method('execute')
-            ->with($sqlParameters);
+            ->with($sqlParameters)
+            ->willReturn(true);
 
         $mockPdoStatement->expects($this->once())
             ->method('fetchColumn')
@@ -315,6 +322,34 @@ class DbTest extends \PHPUnit_Framework_TestCase
             $expectedAffectedRows,
             $mockDb->update($table, $updateData, $whereSql, $whereParameters)
         );
+    }
 
+    public function testExecuteQueryWithFailureInPdoStatmentExecuteCallWillThrowQueryException()
+    {
+        $sql = 'INSERT `test_table` (`test_column`) VALUES (?)';
+        $sqlParameters = ['abc'];
+        $errorInfo = ['HY000', 1364, "Field 'strategy' doesn't have a default value"];
+        $expectedExceptionMessage = "Field 'strategy' doesn't have a default value "
+            . "[SQL: INSERT `test_table` (`test_column`) VALUES (?)] [Parameters: abc]";
+
+        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+
+        $this->mockPdo->expects($this->once())
+            ->method('prepare')
+            ->with($sql)
+            ->willReturn($mockPdoStatement);
+
+        $mockPdoStatement->expects($this->once())
+            ->method('execute')
+            ->with(['abc'])
+            ->willReturn(false);
+
+        $mockPdoStatement->expects($this->once())
+            ->method('errorInfo')
+            ->willReturn($errorInfo);
+
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->db->exec($sql, $sqlParameters);
     }
 }

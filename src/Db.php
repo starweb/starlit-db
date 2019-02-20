@@ -189,7 +189,11 @@ class Db
         $dbParameters = $this->prepareParameters($parameters);
         try {
             $pdoStatement = $this->pdo->prepare($sql);
-            $pdoStatement->execute($dbParameters);
+            if(!$pdoStatement->execute($dbParameters)) {
+                $message = $pdoStatement->errorInfo()[2];
+
+                throw new PDOException($message);
+            }
 
             return $pdoStatement;
         } catch (PDOException $e) {
