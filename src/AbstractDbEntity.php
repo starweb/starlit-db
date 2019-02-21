@@ -498,7 +498,7 @@ abstract class AbstractDbEntity implements \Serializable
      */
     public function clearModifiedDbProperty($property)
     {
-        if (($key = array_search($property, $this->modifiedDbProperties))) {
+        if (($key = array_search($property, $this->modifiedDbProperties)) !== false) {
             unset($this->modifiedDbProperties[$key]);
         }
     }
