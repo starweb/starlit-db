@@ -6,6 +6,7 @@ use DateTime;
 use PDO;
 use PDOException;
 use PDOStatement;
+use Starlit\Db\Exception\ConnectionException;
 
 class DbTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,10 +20,110 @@ class DbTest extends \PHPUnit_Framework_TestCase
      */
     private $mockPdo;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $mockPdoFactory;
+
     protected function setUp()
     {
         $this->mockPdo = $this->createMock(PDO::class);
-        $this->db = new Db($this->mockPdo);
+        $this->mockPdoFactory = $this->createMock(PdoFactory::class);
+        $this->db = new Db($this->mockPdo, null, null, 'database', [], $this->mockPdoFactory);
+    }
+
+    public function testCreationWithPdoTriggersDeprecationError()
+    {
+        $expectedErrorStack = [
+            [
+                'message'   => 'Support to pass a PDO instance to the constructor is deprecated and will be removed in version 1.0.0.'
+                                . ' You need to pass in a PDO dsn in the future as first parameter.',
+                'type'      => E_USER_DEPRECATED
+            ]
+        ];
+        $this->assertEquals($expectedErrorStack, ErrorStackTestHelper::$errors);
+    }
+
+    public function testCreationWithHostAndDatabaseTriggersDeprecationError()
+    {
+        ErrorStackTestHelper::$errors = [];
+        $this->getMockBuilder(Db::class)
+            ->setConstructorArgs(['localhost', null, null, 'database', []])
+            ->getMock();
+
+        $expectedErrorStack = [
+            [
+                'message'   => 'Support to pass a host and database to the constructor is deprecated and will be removed in version '
+                                . '1.0.0. You need to pass in a PDO dsn in the future as first parameter.',
+                'type'      => E_USER_DEPRECATED
+            ]
+        ];
+        $this->assertEquals($expectedErrorStack, ErrorStackTestHelper::$errors);
+    }
+
+    public function testConnectFromDsnCreationCallsFactory()
+    {
+        $this->mockPdoFactory
+            ->expects($this->once())
+            ->method('createPdo')
+            ->willReturn($this->mockPdo);
+
+        $db = new Db('sqlite::memory', null, null, 'database', [], $this->mockPdoFactory);
+
+        $this->assertFalse($db->isConnected());
+        $this->assertNull($db->getPdo());
+        $db->connect();
+        $this->assertTrue($db->isConnected());
+        $this->assertInstanceOf(PDO::class, $db->getPdo());
+    }
+
+    public function testRetryConnectOnPdoCreationFailureThrowsConnectionException()
+    {
+        $this->mockPdoFactory
+            ->expects($this->exactly(2))
+            ->method('createPdo')
+            ->willThrowException(new PDOException('Can not connect to mysql server', 2002));
+
+        $db = new Db(
+            'mysql:hostname=localhost',
+            null,
+            null,
+            'database',
+            ['connectRetries' => 1],
+            $this->mockPdoFactory
+        );
+
+        $this->expectException(ConnectionException::class);
+        $this->expectExceptionMessage('Can not connect to mysql server');
+        $db->connect();
+    }
+
+    public function testRetryConnectWithFailureOnFirstPdoCreation()
+    {
+        $this->mockPdoFactory
+            ->expects($this->exactly(2))
+            ->method('createPdo')
+            ->will(
+                $this->onConsecutiveCalls(
+                    $this->throwException(new PDOException('Can not connect to mysql server', 2002)),
+                    $this->mockPdo
+                )
+            );
+
+        $db = new Db(
+            'mysql:hostname=localhost',
+            null,
+            null,
+            'database',
+            ['connectRetries' => 1],
+            $this->mockPdoFactory
+        );
+
+        $this->assertFalse($db->isConnected());
+        $this->assertNull($db->getPdo());
+        $db->connect();
+        $this->assertTrue($db->isConnected());
+        $this->assertInstanceOf(PDO::class, $db->getPdo());
     }
 
     public function testDisconnectClearsPdo()
