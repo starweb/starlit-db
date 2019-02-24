@@ -81,7 +81,7 @@ class Db
     ) {
         if ($hostDsnOrPdo instanceof PDO) {
             @trigger_error(
-                'support to pass a PDO instance to the constructor is deprecated and will be removed in version 1.0.0.'
+                'Support to pass a PDO instance to the constructor is deprecated and will be removed in version 1.0.0.'
                 . ' You need to pass in a PDO dsn in the future as first parameter.',
                 E_USER_DEPRECATED
             );
@@ -91,7 +91,7 @@ class Db
             $this->dsn = $hostDsnOrPdo;
         } else {
             @trigger_error(
-                'support to pass a host and database to the constructor is deprecated and will be removed in version '
+                'Support to pass a host and database to the constructor is deprecated and will be removed in version '
                 . '1.0.0. You need to pass in a PDO dsn in the future as first parameter.',
                 E_USER_DEPRECATED
             );
