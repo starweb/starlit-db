@@ -2,6 +2,11 @@
 
 namespace Starlit\Db;
 
+use DateTime;
+use PDO;
+use PDOException;
+use PDOStatement;
+
 class DbTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -16,7 +21,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->mockPdo = $this->createMock(\PDO::class);
+        $this->mockPdo = $this->createMock(PDO::class);
         $this->db = new Db($this->mockPdo);
     }
 
@@ -42,7 +47,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPdoIsPdoInstance()
     {
-        $this->assertInstanceOf('\PDO', $this->db->getPdo());
+        $this->assertInstanceOf(PDO::class, $this->db->getPdo());
     }
 
     public function testExecCallsPdoWithSqlAndParams()
@@ -51,7 +56,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $sqlParameters = [1, 2.3, true, false, 'abc', null];
         $rowCount = 5;
 
-        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+        $mockPdoStatement = $this->createMock(PDOStatement::class);
 
         $this->mockPdo->expects($this->once())
             ->method('prepare')
@@ -72,11 +77,11 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
     public function testDateTimeParameterIsConvertedToString()
     {
-        $dateTime = new \DateTime('2000-01-01 00:00:00');
+        $dateTime = new DateTime('2000-01-01 00:00:00');
         $sqlParameters = [$dateTime];
         $sql = '';
 
-        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+        $mockPdoStatement = $this->createMock(PDOStatement::class);
 
         $this->mockPdo
             ->method('prepare')
@@ -94,7 +99,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockPdo
             ->method('prepare')
-            ->willThrowException(new \PDOException());
+            ->willThrowException(new PDOException());
 
         $this->expectException(\Starlit\Db\Exception\QueryException::class);
         $this->db->exec('NO SQL');
@@ -102,7 +107,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
     public function testExecThrowsExceptionWithInvalidParameterTypes()
     {
-        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+        $mockPdoStatement = $this->createMock(PDOStatement::class);
         $this->mockPdo->method('prepare')->willReturn($mockPdoStatement);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -117,7 +122,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $sqlParameters = [1];
         $tableData = ['id' => 5];
 
-        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+        $mockPdoStatement = $this->createMock(PDOStatement::class);
         $this->mockPdo->expects($this->once())
             ->method('prepare')
             ->with($sql)
@@ -140,7 +145,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $sqlParameters = [3];
         $tableData = [['id' => 1], ['id' => 2]];
 
-        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+        $mockPdoStatement = $this->createMock(PDOStatement::class);
         $this->mockPdo->expects($this->once())
             ->method('prepare')
             ->with($sql)
@@ -163,7 +168,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $sqlParameters = [10];
         $result = 5;
 
-        $mockPdoStatement = $this->createMock(\PDOStatement::class);
+        $mockPdoStatement = $this->createMock(PDOStatement::class);
         $this->mockPdo->expects($this->once())
             ->method('prepare')
             ->with($sql)
@@ -315,6 +320,5 @@ class DbTest extends \PHPUnit_Framework_TestCase
             $expectedAffectedRows,
             $mockDb->update($table, $updateData, $whereSql, $whereParameters)
         );
-
     }
 }
