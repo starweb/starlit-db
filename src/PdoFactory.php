@@ -2,7 +2,7 @@
 /**
  * Starlit Db.
  *
- * @copyright Copyright (c) 2016 Starweb AB
+ * @copyright Copyright (c) 2019 Starweb AB
  * @license   BSD 3-Clause
  */
 
