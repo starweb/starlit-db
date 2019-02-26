@@ -196,6 +196,15 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($entity->hasModifiedDbProperties());
     }
 
+    public function testClearModifiedDbProperty()
+    {
+        $entity = new TestDbEntity();
+        $entity->setSomeField(true);
+        $this->assertSame(['someField'], $entity->getModifiedDbProperties());
+        $entity->clearModifiedDbProperty('someField');
+        $this->assertFalse($entity->hasModifiedDbProperties());
+    }
+
     public function testGetDbPropertyName()
     {
         $this->assertEquals('someName', TestDbEntity::getDbPropertyName('some_name'));
