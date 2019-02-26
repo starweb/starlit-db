@@ -5,6 +5,7 @@
     "keywords": ["database", "MySQL", "PDO", "ORM"],
     "homepage": "http://github.com/starweb/starlit-db",
     "license": "BSD-3-Clause",
+    "version": "1.0.x-dev",
     "authors": [
         {
             "name": "Starweb AB"
