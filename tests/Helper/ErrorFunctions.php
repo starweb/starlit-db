@@ -13,9 +13,4 @@ namespace Starlit\Db {
             'type' => $type
         ];
     }
-
-    function usleed(int $start, int $stop)
-    {
-
-    }
 }
