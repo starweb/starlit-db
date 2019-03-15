@@ -124,7 +124,6 @@ class Db
                     throw new ConnectionException($e);
                 }
             }
-
         } while ($retries-- > 0);
     }
 

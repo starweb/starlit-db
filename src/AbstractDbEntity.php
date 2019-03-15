@@ -344,7 +344,8 @@ abstract class AbstractDbEntity implements \Serializable
      * @param mixed  $value
      * @return mixed
      */
-    private function getValueWithPropertyType(string $property, $value) {
+    private function getValueWithPropertyType(string $property, $value)
+    {
         if (!isset(static::$dbProperties[$property])) {
             throw new \InvalidArgumentException("No database entity property[{$property}] exists");
         }
@@ -374,7 +375,8 @@ abstract class AbstractDbEntity implements \Serializable
      * @param mixed $value
      * @return mixed
      */
-    private function getPrimaryDbValueWithPropertyType($primaryDbValue) {
+    private function getPrimaryDbValueWithPropertyType($primaryDbValue)
+    {
         if (is_array(static::$primaryDbPropertyKey)) {
             if (!is_array($primaryDbValue)
                 || count(static::$primaryDbPropertyKey) !== count($primaryDbValue)

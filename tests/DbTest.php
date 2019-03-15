@@ -36,7 +36,8 @@ class DbTest extends \PHPUnit_Framework_TestCase
     {
         $expectedErrorStack = [
             [
-                'message'   => 'Support to pass a PDO instance to the constructor is deprecated and will be removed in version 1.0.0.'
+                'message'   => 'Support to pass a PDO instance to the constructor is deprecated and '
+                                . 'will be removed in version 1.0.0.'
                                 . ' You need to pass in a PDO dsn in the future as first parameter.',
                 'type'      => E_USER_DEPRECATED
             ]
@@ -53,8 +54,9 @@ class DbTest extends \PHPUnit_Framework_TestCase
 
         $expectedErrorStack = [
             [
-                'message'   => 'Support to pass a host and database to the constructor is deprecated and will be removed in version '
-                                . '1.0.0. You need to pass in a PDO dsn in the future as first parameter.',
+                'message'   => 'Support to pass a host and database to the constructor is deprecated and will be '
+                                . 'removed in version 1.0.0. '
+                                . 'You need to pass in a PDO dsn in the future as first parameter.',
                 'type'      => E_USER_DEPRECATED
             ]
         ];

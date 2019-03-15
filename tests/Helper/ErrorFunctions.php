@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace Starlit\Db {
+
     class ErrorStackTestHelper
     {
         public static $errors = [];
