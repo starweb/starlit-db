@@ -104,15 +104,13 @@ class Db
         $this->pdoFactory = $pdoFactory ?? new PdoFactory();
     }
 
-    /**
-     */
     public function connect()
     {
         if ($this->isConnected()) {
             return;
         }
 
-        $retries = isset($this->options['connectRetries']) ? $this->options['connectRetries'] : 0;
+        $retries = $this->options['connectRetries'] ?? 0;
         do {
             try {
                 $this->pdo = $this->pdoFactory->createPdo($this->dsn, $this->username, $this->password, $this->options);
