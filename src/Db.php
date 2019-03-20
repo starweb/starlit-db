@@ -54,61 +54,66 @@ class Db
     protected $hasActiveTransaction = false;
 
     /**
+     * @var PdoFactoryInterface
+     */
+    private $pdoFactory;
+
+    /**
      * Constructor.
      *
-     * @param string|PDO  $hostDsnOrPdo A MySQL host, a dsn or an existing PDO instance.
-     * @param string|null $username
-     * @param string|null $password
-     * @param string|null $database
-     * @param array       $options
+     * @param string|PDO            $hostDsnOrPdo A MySQL host, a dsn or an existing PDO instance.
+     * @param string|null           $username
+     * @param string|null           $password
+     * @param string|null           $database
+     * @param array                 $options
+     * @param PdoFactoryInterface   $pdoFactory
+     *
+     * @deprecated  The signature of the constructor will change in version 1.0.0 and accept
+     *              only a PDO dsn string as first parameter dropping support to inject a PDO instance or host string
      */
     public function __construct(
         $hostDsnOrPdo,
         $username = null,
         $password = null,
         $database = null,
-        array $options = []
+        array $options = [],
+        PdoFactoryInterface $pdoFactory = null
     ) {
         if ($hostDsnOrPdo instanceof PDO) {
+            @trigger_error(
+                'Support to pass a PDO instance to the constructor is deprecated and will be removed in version 1.0.0.'
+                . ' You need to pass in a PDO dsn in the future as first parameter.',
+                E_USER_DEPRECATED
+            );
+
             $this->pdo = $hostDsnOrPdo;
         } elseif (strpos($hostDsnOrPdo, ':') !== false) {
             $this->dsn = $hostDsnOrPdo;
         } else {
+            @trigger_error(
+                'Support to pass a host and database to the constructor is deprecated and will be removed in version '
+                . '1.0.0. You need to pass in a PDO dsn in the future as first parameter.',
+                E_USER_DEPRECATED
+            );
             $this->dsn = "mysql:host={$hostDsnOrPdo}" . ($database ? ";dbname={$database}" : '');
         }
 
         $this->username = $username;
         $this->password = $password;
         $this->options = $options;
+        $this->pdoFactory = $pdoFactory ?? new PdoFactory();
     }
 
-    /**
-     */
     public function connect()
     {
         if ($this->isConnected()) {
             return;
         }
 
-        $retries = isset($this->options['connectRetries'])? $this->options['connectRetries'] : 0;
+        $retries = $this->options['connectRetries'] ?? 0;
         do {
             try {
-                $defaultPdoOptions = [
-                    PDO::ATTR_TIMEOUT            => 5,
-                    // We want emulation by default (faster for single queries). Disable if you want to
-                    // use proper native prepared statements
-                    PDO::ATTR_EMULATE_PREPARES   => true,
-                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                ];
-                $pdoOptions = $defaultPdoOptions + (isset($this->options['pdo']) ? $this->options['pdo'] : []);
-
-                $this->pdo = new PDO(
-                    $this->dsn,
-                    $this->username,
-                    $this->password,
-                    $pdoOptions
-                );
+                $this->pdo = $this->pdoFactory->createPdo($this->dsn, $this->username, $this->password, $this->options);
 
                 return;
             } catch (PDOException $e) {
@@ -119,7 +124,6 @@ class Db
                     throw new ConnectionException($e);
                 }
             }
-
         } while ($retries-- > 0);
     }
 

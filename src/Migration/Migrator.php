@@ -134,7 +134,6 @@ class Migrator
         $latest = end($numbers);
 
         return ($latest !== false) ? $latest : 0;
-
     }
 
     /**
@@ -371,12 +370,10 @@ class Migrator
                 $this->addInfo(sprintf(' - Migrating up %d...', $migration->getNumber()));
                 $migration->up();
                 $this->addMigratedMigration($migration);
-
             } else {
                 $this->addInfo(sprintf(' - Migrating down %d...', $migration->getNumber()));
                 $migration->down();
                 $this->deleteMigratedMigration($migration);
-
             }
         }
     }

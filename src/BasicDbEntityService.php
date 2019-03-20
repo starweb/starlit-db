@@ -148,7 +148,6 @@ class BasicDbEntityService
                 $sqlData,
                 $this->getPrimaryKeyWhereSql($dbEntity),
                 $this->getPrimaryKeyWhereParameters($dbEntity)
-
             );
         }
 
