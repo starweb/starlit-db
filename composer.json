@@ -11,8 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
-        "ext-pdo": "*",
+        "php": ">=7.1",
         "ext-pdo_mysql": "*",
         "starlit/utils": "^1.1"
     },
