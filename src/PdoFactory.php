@@ -23,7 +23,7 @@ class PdoFactory implements PdoFactoryInterface
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ];
 
-        $pdoOptions = $defaultPdoOptions + (isset($options['pdo']) ? $options['pdo'] : []);
+        $pdoOptions = array_merge($defaultPdoOptions, (isset($options['pdo']) ? $options['pdo'] : []));
 
         return new PDO($dsn, $username, $password, $pdoOptions);
     }
