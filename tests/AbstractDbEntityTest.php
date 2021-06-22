@@ -494,6 +494,25 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(123, $unserializedEntity->publicProperty);
     }
 
+    public function testUnserializeWithMissingProperties()
+    {
+        $entity = new TestDbEntity();
+
+        $reflectionClass = (new \ReflectionClass($entity))->getParentClass();
+        $reflectionProperty = $reflectionClass->getProperty('dbData');
+        $reflectionProperty->setAccessible(true);
+        $dbData = $reflectionProperty->getValue($entity);
+        unset($dbData['someName']);
+        $reflectionProperty->setValue($entity, $dbData);
+
+        $unserializedEntity = unserialize(serialize($entity));
+
+        $this->assertEquals(
+            $entity->getDefaultDbPropertyValue('someName'),
+            $unserializedEntity->getDbData()['someName']
+        );
+    }
+
     public function testMergeWith()
     {
         $entity = new TestDbEntity();

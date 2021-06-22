@@ -878,6 +878,10 @@ abstract class AbstractDbEntity implements \Serializable
         foreach ($objectVars as $key => $value) {
             $this->{$key} = $value;
         }
+
+        foreach (array_diff_key(static::$dbProperties, $this->dbData) as $missingProperty => $value) {
+            $this->dbData[$missingProperty] = $this->getDefaultDbPropertyValue($missingProperty);
+        }
     }
 
     /**
