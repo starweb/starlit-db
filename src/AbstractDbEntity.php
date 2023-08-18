@@ -16,7 +16,7 @@ use Starlit\Utils\Arr;
  *
  * @author Andreas Nilsson <http://github.com/jandreasn>
  */
-abstract class AbstractDbEntity implements \Serializable
+abstract class AbstractDbEntity
 {
     /**
      * The database table name (meant to be overridden).
@@ -858,7 +858,7 @@ abstract class AbstractDbEntity implements \Serializable
      *
      * @return string
      */
-    public function serialize()
+    public function __serialize()
     {
         return serialize(get_object_vars($this));
     }
@@ -871,7 +871,7 @@ abstract class AbstractDbEntity implements \Serializable
      *
      * @param string $serializedObject
      */
-    public function unserialize($serializedObject)
+    public function __unserialize($serializedObject)
     {
         $objectVars = unserialize($serializedObject);
 
