@@ -79,6 +79,42 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(PDO::class, $db->getPdo());
     }
 
+    public function testFullMysqlDsnWithoutCharsetGetsUtf8mb4Appended()
+    {
+        $this->mockPdoFactory
+            ->expects($this->once())
+            ->method('createPdo')
+            ->with('mysql:host=localhost;dbname=database;charset=utf8mb4', null, null, [])
+            ->willReturn($this->mockPdo);
+
+        $db = new Db('mysql:host=localhost;dbname=database', null, null, null, [], $this->mockPdoFactory);
+        $db->connect();
+    }
+
+    public function testExplicitCharsetInDsnIsPreserved()
+    {
+        $this->mockPdoFactory
+            ->expects($this->once())
+            ->method('createPdo')
+            ->with('mysql:host=localhost;charset=latin1', null, null, [])
+            ->willReturn($this->mockPdo);
+
+        $db = new Db('mysql:host=localhost;charset=latin1', null, null, null, [], $this->mockPdoFactory);
+        $db->connect();
+    }
+
+    public function testNonMysqlDsnIsNotModified()
+    {
+        $this->mockPdoFactory
+            ->expects($this->once())
+            ->method('createPdo')
+            ->with('sqlite::memory', null, null, [])
+            ->willReturn($this->mockPdo);
+
+        $db = new Db('sqlite::memory', null, null, null, [], $this->mockPdoFactory);
+        $db->connect();
+    }
+
     public function testRetryConnectOnPdoCreationFailureThrowsConnectionException()
     {
         $this->mockPdoFactory
