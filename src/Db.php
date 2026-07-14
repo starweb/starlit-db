@@ -88,20 +88,41 @@ class Db
 
             $this->pdo = $hostDsnOrPdo;
         } elseif (strpos($hostDsnOrPdo, ':') !== false) {
-            $this->dsn = $hostDsnOrPdo;
+            $this->dsn = $this->ensureUtf8mb4Charset($hostDsnOrPdo);
         } else {
             @trigger_error(
                 'Support to pass a host and database to the constructor is deprecated and will be removed in version '
                 . '1.0.0. You need to pass in a PDO dsn in the future as first parameter.',
                 E_USER_DEPRECATED
             );
-            $this->dsn = "mysql:host={$hostDsnOrPdo}" . ($database ? ";dbname={$database}" : '');
+            $this->dsn = $this->ensureUtf8mb4Charset(
+                "mysql:host={$hostDsnOrPdo}" . ($database ? ";dbname={$database}" : '')
+            );
         }
 
         $this->username = $username;
         $this->password = $password;
         $this->options = $options;
         $this->pdoFactory = $pdoFactory ?? new PdoFactory();
+    }
+
+    /**
+     * Ensure a MySQL DSN declares utf8mb4 as the connection charset.
+     *
+     * The charset must be negotiated per connection rather than relying on the server default
+     * (e.g. skip-character-set-client-handshake), which no longer exists on MySQL 8.4. Setting it
+     * via the DSN also updates the driver's internal charset used for client-side escaping.
+     *
+     * Only mysql DSNs are touched, an explicitly supplied charset is preserved, and the operation
+     * is idempotent.
+     */
+    private function ensureUtf8mb4Charset(string $dsn): string
+    {
+        if (strncmp($dsn, 'mysql:', 6) === 0 && stripos($dsn, 'charset=') === false) {
+            return $dsn . ';charset=utf8mb4';
+        }
+
+        return $dsn;
     }
 
     public function connect()
