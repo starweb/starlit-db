@@ -851,31 +851,29 @@ abstract class AbstractDbEntity
     }
 
     /**
-     * Method to handle the serialization of this object.
+     * Handle the serialization of this object (PHP __serialize() contract).
      *
-     * Implementation of Serializable interface. If descendant private properties
-     * should be serialized, they need to be visible to this parent (i.e. not private).
+     * Must return an array. If descendant private properties should be serialized, they need to
+     * be visible to this parent (i.e. not private).
      *
-     * @return string
+     * @return array
      */
-    public function __serialize()
+    public function __serialize(): array
     {
-        return serialize(get_object_vars($this));
+        return get_object_vars($this);
     }
 
     /**
-     * Method to handle the unserialization of this object.
+     * Handle the unserialization of this object (PHP __unserialize() contract).
      *
-     * Implementation of Serializable interface. If descendant private properties
-     * should be unserialized, they need to be visible to this parent (i.e. not private).
+     * Receives the array produced by __serialize() and restores it. Any DB properties added since
+     * the object was serialized are backfilled with their default values.
      *
-     * @param string $serializedObject
+     * @param array $data
      */
-    public function __unserialize($serializedObject)
+    public function __unserialize(array $data): void
     {
-        $objectVars = unserialize($serializedObject);
-
-        foreach ($objectVars as $key => $value) {
+        foreach ($data as $key => $value) {
             $this->{$key} = $value;
         }
 

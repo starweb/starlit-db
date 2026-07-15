@@ -486,6 +486,14 @@ class AbstractDbEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertNotContains('private info', serialize($entity));
     }
 
+    public function testSerializeReturnsArray()
+    {
+        $entity = new TestDbEntity();
+        // PHP's __serialize() magic method must return an array; returning a string throws a
+        // TypeError on PHP >= 7.4 the moment the entity is serialized (e.g. written to a session).
+        $this->assertTrue(is_array($entity->__serialize()));
+    }
+
     public function testUnserialize()
     {
         $entity = new TestDbEntity();
